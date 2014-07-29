@@ -25,6 +25,8 @@ In this case we want to be able to expand "object" into the the actual object re
     }
 }
 
+NOTE:
+The datetime property REQUIRES both pytz and python-dateutil
 
 TODO
 ==========
