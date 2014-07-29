@@ -8,7 +8,6 @@ About
 Base object models for API objects.
 
 Allows you to have objects which expand themselves e.g.
-
 ::
     {
         "name" : "Will",
