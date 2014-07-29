@@ -1,55 +1,9 @@
 # coding: utf-8
 
-import json
-
-from base import ObjectifyObject
-from meta import ObjectifyDictType, ObjectifyListType
-from property import ObjectifyProperty
-
-class ObjectifyModel(ObjectifyObject):
-    __fetch_attr__ = None
-
-    name = None
-    fetch_attrs = None
-    serializer = None
-    deserializer = None
-    fetch_key = None
-
-    def __init__(self,name=None,fetch_key=False,fetch_attrs=[],serializer=json.dumps,deserializer=json.loads,**kwargs):
-        super(ObjectifyModel, self).__init__(
-            name=name,
-            fetch_key=fetch_key,
-            fetch_attrs=fetch_attrs,
-            serializer=serializer,
-            deserializer=deserializer,**kwargs
-        )
-
-        self.name = name
-        self.fetch_attrs = set(fetch_attrs)
-        self.serializer = serializer
-        self.deserializer = deserializer
-        self.fetch_key = fetch_key
-
-        self.__fetch_attr__ = None
-
-
-    def serialize(self):
-        return self.serializer(self.to_collection())
-
-    def deserialize(self,val):
-        return self.from_collection(
-            self.deserializer(val)
-        )
-
-    def duplicate_inited(self,keep_name=True):
-        if keep_name:
-            self.__init_kwargs__['name'] = self.name
-
-        return self.__class__(
-            *self.__init_args__,
-            **self.__init_kwargs__
-        )
-
+from .base import ObjectifyModel
+from ..base import ObjectifyObject
+from ..prop import ObjectifyProperty
+from ..meta import ObjectifyDictType
 
 class ObjectifyDict(ObjectifyModel,dict):
 
@@ -91,7 +45,7 @@ class ObjectifyDict(ObjectifyModel,dict):
     def __setattr__(self,name,val,raw=False):
         if name[-2:] == "__" and name[:2] == "__":
             return super(ObjectifyDict, self).__setattr__(name,val)
-
+        
         existing = getattr(self,name,None)
         try:
             existing = self.__getattribute__(name,raw=True)
@@ -221,7 +175,10 @@ class ObjectifyDict(ObjectifyModel,dict):
             name = self.__obj_attrs__[attr]
 
             self.__setattr__(name,obj)
-
+    
+    def fetch(self):
+        _id = getattr(self,self.__fetch_attr__)
+        return self.fetch_from(_id)
 
     def duplicate_inited(self,keep_name=True):
         if keep_name:
@@ -239,72 +196,3 @@ class ObjectifyDict(ObjectifyModel,dict):
             )
         
         return cl
-                
-
-
-class ObjectifyList(ObjectifyModel,list):
-    __metaclass__ = ObjectifyListType
-    """
-        The instantiated ObjectifyObject class we want to use in our list
-    """
-    __list_object__ = None
-
-    def __init__(self,list_object=None,**kwargs):
-        super(ObjectifyList, self).__init__(list_object=list_object, **kwargs)
-
-        if list_object is not None:
-            self.__list_object__ = list_object
-
-        if self.__list_object__ is None:
-            raise RuntimeError("Cannot have an ObjectifyList without a __list_object__")
-
-    def __setitem__(self, key, item):
-        if isinstance(item,self.__list_object__.__class__):
-            item = item.to_collection()
-
-        self[key] = self.__list_object__.duplicate_inited()
-        self[key].from_collection(item)
-
-    def to_collection(self):
-        to_return = []
-        for obj in self:
-            to_return.append(obj.to_collection())
-
-        return to_return
-
-    def from_collection(self,lst,clear=True):
-        if clear:
-            del self[:]
-        
-        if not isinstance(lst,list):
-            lst = [lst]
-
-        for obj in lst:
-            if not isinstance(obj,self.__list_object__.__class__):
-                _obj = obj
-                obj = self.__list_object__.duplicate_inited()
-                obj.from_collection(_obj)
-
-            self.append(obj)
-
-    def duplicate_inited(self,keep_name=True):
-        if keep_name:
-            self.__init_kwargs__['name'] = self.name
-
-        cl = self.__class__(
-            *self.__init_args__,
-            **self.__init_kwargs__
-        )
-
-        cl.__list_object__ = cl.__list_object__.duplicate_inited()
-        
-        return cl
-
-
-
-
-
-
-
-
-

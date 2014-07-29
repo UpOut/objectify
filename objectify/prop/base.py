@@ -1,12 +1,16 @@
 # coding: utf-8
 
-from .base import ObjectifyObject
+from ..base import ObjectifyObject
 
 class ObjectifyProperty(ObjectifyObject):
 
     to_type = None
-    #Should be an APIObject
-    fetch_object = None
+    #Should be an ObjectifyObject
+    #Object to use to fetch
+    __fetch_object__ = None
+    #Execute this function with the value of this property
+    #Use what it returns to fetch
+    __fetch_wrapper_func__ = None
 
     name = None
 
@@ -42,12 +46,12 @@ class ObjectifyProperty(ObjectifyObject):
             self.auto_fetch = auto_fetch
         else:
             self._auto_fetch_set = False
-            if not self.fetch_object:
+            if not self.__fetch_object__:
                 self.auto_fetch = False
             else:
                 self.auto_fetch = True
 
-        if self.auto_fetch and not self.fetch_object:
+        if self.auto_fetch and not self.__fetch_object__:
             raise RuntimeError("Cannot auto_fetch property without fetch_object")
 
         self.auto_fetch_default = auto_fetch_default
@@ -59,7 +63,7 @@ class ObjectifyProperty(ObjectifyObject):
         return self.to_type(value)
 
     def fetch(self):
-        if not self.fetch_object:
+        if not self.__fetch_object__:
             raise RuntimeError("Cannot fetch value without fetch_object")
 
         _do_fetch = True
@@ -71,7 +75,12 @@ class ObjectifyProperty(ObjectifyObject):
         if _do_fetch:
             self.__value_fetched_value__ = self.__value__
             self.__value_fetched__ = True
-            self.__value_retrieved__ = self.fetch_object.duplicate_inited()
+            self.__value_retrieved__ = self.__fetch_object__.duplicate_inited()
+
+            fetch_from = self.__value__
+            if self.__fetch_wrapper_func__ is not None:
+                fetch_from = self.__fetch_wrapper_func__(fetch_from)
+
             self.__value_retrieved__.fetch_from(self.__value__)
             self.__value_retrieved__ = self.__value_retrieved__.to_collection()
 

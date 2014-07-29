@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from ..property import ObjectifyProperty
+from .base import ObjectifyProperty
 
 class String(ObjectifyProperty):
     to_type=str

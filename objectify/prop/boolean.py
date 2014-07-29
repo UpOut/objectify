@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from ..property import ObjectifyProperty
+from .base import ObjectifyProperty
 
 TRUE_VALUES = set(['true','1','yes'])
 FALSE_VALUES = set(['false','0','no'])

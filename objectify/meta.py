@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from property import ObjectifyProperty
+from .prop import ObjectifyProperty
 from base import ObjectifyObject
 
 class ObjectifyDictType(type):

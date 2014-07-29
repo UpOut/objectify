@@ -23,6 +23,10 @@ class ObjectifyObject(object):
         raise NotImplementedError()
 
 
+    def saveable_collection(self):
+        raise NotImplementedError()
+        
+        
     def to_collection(self):
         raise NotImplementedError()
 
