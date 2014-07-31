@@ -44,7 +44,7 @@ class ObjectifyModel(ObjectifyObject):
             self.__deserializer__(val)
         )
 
-    def duplicate_inited(self,keep_name=True):
+    def copy_inited(self,keep_name=True):
         if keep_name:
             self.__init_kwargs__['name'] = self.name
 

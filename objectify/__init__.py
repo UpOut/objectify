@@ -3,5 +3,5 @@
 
 __version__ = "0.1.0"
 
-from .base import *
-from .model import *
+from base import *
+from model import *

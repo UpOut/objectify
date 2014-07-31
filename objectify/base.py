@@ -35,7 +35,7 @@ class ObjectifyObject(object):
 
 
     #Return a duplicate object with the init args/kwargs used
-    def duplicate_inited(self):
+    def copy_inited(self):
         return self.__class__(
             *self.__init_args__,
             **self.__init_kwargs__

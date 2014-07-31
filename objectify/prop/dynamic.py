@@ -1,10 +1,14 @@
 # coding: utf-8
 
+import copy
+
 from .base import ObjectifyProperty
 
 from .boolean import Boolean
 from .number import Integer,Float,Long
 from .string import Unicode, String
+
+from ..model.base import ObjectifyModel
 
 class Dynamic(ObjectifyProperty):
     
@@ -64,10 +68,23 @@ class Dynamic(ObjectifyProperty):
 
 
     def _to_type(self,frm):
-
+        """
+            You might think we should have a handler along the lines of
+            if isinstance(frm,ObjectifyModel):
+                ...
+            You're right! It just needs to be in the ObjectifyDict class
+        """
+            
         if isinstance(frm,ObjectifyProperty):
+            _fetch = frm.auto_fetch
+            _fetch_default = frm.auto_fetch_default
             self.__class__ = frm.__class__
-            return frm.from_collection()
+            _frm = frm.to_collection()
+
+            frm.auto_fetch = _fetch
+            frm.auto_fetch_default = _fetch_default
+
+            return _frm
 
         if type(frm) == bool:
             self.__class__ = Boolean
@@ -99,9 +116,6 @@ class Dynamic(ObjectifyProperty):
             pass
 
         raise RuntimeError("Unable to determine type of value %s" % (frm))
-
-
-
 
 
         

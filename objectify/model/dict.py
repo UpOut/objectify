@@ -1,8 +1,10 @@
 # coding: utf-8
 
+import copy
+
 from .base import ObjectifyModel
 from ..base import ObjectifyObject
-from ..prop import ObjectifyProperty
+from ..prop import ObjectifyProperty, Dynamic
 from ..meta import ObjectifyDictType
 
 class ObjectifyDict(ObjectifyModel,dict):
@@ -40,6 +42,13 @@ class ObjectifyDict(ObjectifyModel,dict):
     """
     __obj_attrs__ = {}
 
+    def __init__(self,*args,**kwargs):
+        super(ObjectifyDict, self).__init__(*args,**kwargs)
+        self.__obj_attrs__ = self.__obj_attrs__.copy()
+
+        if (self.__dynamic_class__ is not None and 
+                not isinstance(self.__dynamic_class__,ObjectifyObject)):
+            raise RuntimeError("__dynamic_class__ MUST be an instance of ObjectifyObject if it is set")
 
 
     def __setattr__(self,name,val,raw=False):
@@ -59,14 +68,18 @@ class ObjectifyDict(ObjectifyModel,dict):
 
             existing = None
 
-
         if not raw:
+            if isinstance(existing,Dynamic):
+                return self.__set_dynamic_attr__(name,val)
+
             if isinstance(existing,ObjectifyObject):
                 if isinstance(val,ObjectifyObject):
                     val = val.to_collection()
-                    
-                existing.from_collection(val)
-                val = existing
+                
+                _val = existing.copy_inited()
+                _val.from_collection(val)
+
+                val = _val
 
         super(ObjectifyDict, self).__setattr__(name,val)
 
@@ -81,8 +94,6 @@ class ObjectifyDict(ObjectifyModel,dict):
         
         if not raw:
             if isinstance(existing,ObjectifyObject) and not isinstance(existing,ObjectifyModel):
-                if raw:
-                    return existing
                 return existing.to_collection()
         
         return super(ObjectifyDict, self).__getattribute__(name)
@@ -93,8 +104,67 @@ class ObjectifyDict(ObjectifyModel,dict):
     def __getitem__(self,key):
         return self.__getattribute__(key)
 
-    def __setattr_dynamic__(self,name,val):
 
+    def __set_dynamic_attr__(self,name,val):
+        """
+            This function handles setting attributes which are instances of objectify.prop.Dynamic
+        """
+
+        try:
+            existing = super(ObjectifyDict, self).__getattribute__(name)
+        except Exception as e:
+            raise RuntimeError("Cannot use __set_dynamic_attr__ on a attribute which is not an instance of Dynamic")
+
+        if not isinstance(existing,Dynamic):
+            raise RuntimeError("Cannot use __set_dynamic_attr__ on a attribute which is not an instance of Dynamic")
+
+
+        if isinstance(val,ObjectifyModel):
+            """
+                A dynamic attribute simply wants to adapt any value to the closest ObjectifyObject representation
+                In this case we already have a best fit, which is the raw value
+            """
+            return super(ObjectifyDict, self).__setattr__(name,val)
+
+        """
+            This function handles setting attributes which are or subclass
+            our Dynamic property
+        """
+
+        if isinstance(val,dict):
+            """
+                In this case we need to create a DynamicDict object to properly fit our data
+            """
+
+            from .dynamic import DynamicDict
+            _val = DynamicDict()
+            _val.from_collection(val)
+
+            return super(ObjectifyDict, self).__setattr__(name,_val)
+
+        if isinstance(val,list):
+            """
+                In this case we need to create a DynamicList object to properly fit our data
+            """
+            from .dynamic import DynamicList
+            _val = DynamicList()
+            _val.from_collection(val)
+
+            return super(ObjectifyDict, self).__setattr__(name,_val)
+        
+
+        _val = existing.copy_inited()
+        _val.from_collection(val)
+        
+
+        super(ObjectifyDict, self).__setattr__(name,_val)
+
+
+    def __setattr_dynamic__(self,name,val):
+        """
+            This function handles setting dynamic attributes with rules defined with
+            __dynamic_class__ and __allow_classed_dynamics__
+        """
         if name in self.__obj_attrs__:
             raise RuntimeError("Attempted introduction of dynamic attribute clashes with existing attributes")
 
@@ -121,7 +191,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         self.__obj_attrs__[name] = name
         if not isinstance(val,ObjectifyObject):
             
-            obj = self.__dynamic_class__.duplicate_inited()
+            obj = self.__dynamic_class__.copy_inited()
             obj.name = name
             obj.from_collection(val)
             super(ObjectifyDict, self).__setattr__(name,obj)
@@ -159,28 +229,35 @@ class ObjectifyDict(ObjectifyModel,dict):
 
     def from_collection(self,dict,clear=True):
         #Clear out existing attributes
+
         if clear:
             for _,attr in self.__obj_attrs__.iteritems():
                 if _ in dict:
                     continue
 
                 obj = self.__getattribute__(attr,raw=True)
-                obj = obj.duplicate_inited()
+                obj = obj.copy_inited()
                 self.__setattr__(attr,obj,raw=True)
-                
+        
+
         for attr,obj in dict.iteritems():
+            if self.__dynamic_class__ or self.__allow_classed_dynamics__:
+                self.__setattr__(attr,obj)
+                continue
+
             if attr not in self.__obj_attrs__:
                 continue
 
             name = self.__obj_attrs__[attr]
 
             self.__setattr__(name,obj)
-    
+
+             
     def fetch(self):
         _id = getattr(self,self.__fetch_attr__)
         return self.fetch_from(_id)
 
-    def duplicate_inited(self,keep_name=True):
+    def copy_inited(self,keep_name=True):
         if keep_name:
             self.__init_kwargs__['name'] = self.name
 
@@ -192,7 +269,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         for _,attr in cl.__obj_attrs__.iteritems():
             cl.set_raw_attribute(
                 attr,
-                cl.get_raw_attribute(attr).duplicate_inited()
+                cl.get_raw_attribute(attr).copy_inited()
             )
         
         return cl

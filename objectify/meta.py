@@ -15,7 +15,7 @@ class ObjectifyDictType(type):
 
             if isinstance(obj,ObjectifyObject):
 
-                attrs[attr] = attrs[attr].duplicate_inited()
+                attrs[attr] = attrs[attr].copy_inited()
                 if not getattr(attrs[attr],"name",None):
                     attrs[attr].name = attr
                 

@@ -66,22 +66,26 @@ class ObjectifyProperty(ObjectifyObject):
         if not self.__fetch_object__:
             raise RuntimeError("Cannot fetch value without fetch_object")
 
+        _fetch_value = self.__value__
+        if isinstance(_fetch_value,ObjectifyObject):
+            _fetch_value = _fetch_value.to_collection()
+            
         _do_fetch = True
         if self.__value_fetched__:
-            if self.__value_fetched_value__ == self.__value__:
+            if self.__value_fetched_value__ == _fetch_value:
                 _do_fetch = False
 
 
         if _do_fetch:
-            self.__value_fetched_value__ = self.__value__
+            self.__value_fetched_value__ = _fetch_value
             self.__value_fetched__ = True
-            self.__value_retrieved__ = self.__fetch_object__.duplicate_inited()
+            self.__value_retrieved__ = self.__fetch_object__.copy_inited()
 
-            fetch_from = self.__value__
+            fetch_from = _fetch_value
             if self.__fetch_wrapper_func__ is not None:
                 fetch_from = self.__fetch_wrapper_func__(fetch_from)
 
-            self.__value_retrieved__.fetch_from(self.__value__)
+            self.__value_retrieved__.fetch_from(_fetch_value)
             self.__value_retrieved__ = self.__value_retrieved__.to_collection()
 
         return self.__value_retrieved__
@@ -120,7 +124,7 @@ class ObjectifyProperty(ObjectifyObject):
     def value(self,value):
         self.from_collection(value)
 
-    def duplicate_inited(self,keep_name=True):
+    def copy_inited(self,keep_name=True):
         if keep_name:
             self.__init_kwargs__['name'] = self.name
 
