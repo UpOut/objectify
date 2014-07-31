@@ -192,11 +192,11 @@ class ObjectifyDict(ObjectifyModel,dict):
         if not isinstance(val,ObjectifyObject):
             
             obj = self.__dynamic_class__.copy_inited()
-            obj.name = name
+            obj.__key_name__ = name
             obj.from_collection(val)
             super(ObjectifyDict, self).__setattr__(name,obj)
         else:
-            val.name = name
+            val.__key_name__ = name
             super(ObjectifyDict, self).__setattr__(name,val)
 
     def set_raw_attribute(self,name,val):
@@ -212,17 +212,17 @@ class ObjectifyDict(ObjectifyModel,dict):
             if isinstance(obj,ObjectifyProperty):
                 if not obj._auto_fetch_set:
                     #Auto fetch not specifically set
-                    if not obj.auto_fetch and attr in self.fetch_attrs:
+                    if not obj.auto_fetch and attr in self.__fetch_attrs__:
                         obj.auto_fetch = True
-                        to_return[obj.name] = obj.value
+                        to_return[obj.__key_name__] = obj.value
                         obj.auto_fetch = False
                     else:
-                        to_return[obj.name] = obj.value
+                        to_return[obj.__key_name__] = obj.value
 
                 else:
-                    to_return[obj.name] = obj.value
+                    to_return[obj.__key_name__] = obj.value
             elif isinstance(obj,ObjectifyObject):
-                to_return[obj.name] = obj.to_collection()
+                to_return[obj.__key_name__] = obj.to_collection()
 
 
         return to_return
@@ -259,7 +259,7 @@ class ObjectifyDict(ObjectifyModel,dict):
 
     def copy_inited(self,keep_name=True):
         if keep_name:
-            self.__init_kwargs__['name'] = self.name
+            self.__init_kwargs__['name'] = self.__key_name__
 
         cl = self.__class__(
             *self.__init_args__,

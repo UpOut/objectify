@@ -35,8 +35,8 @@ class ObjectifyProperty(ObjectifyObject):
             auto_fetch=auto_fetch
         )
 
-        self.name = name
-        self.fetch_key = fetch_key
+        self.__key_name__ = name
+        self.__fetch_key__ = fetch_key
         self.default = default
         self.__value__ = default
         self.__value_set__ = False
@@ -126,7 +126,7 @@ class ObjectifyProperty(ObjectifyObject):
 
     def copy_inited(self,keep_name=True):
         if keep_name:
-            self.__init_kwargs__['name'] = self.name
+            self.__init_kwargs__['name'] = self.__key_name__
 
         return self.__class__(
             *self.__init_args__,

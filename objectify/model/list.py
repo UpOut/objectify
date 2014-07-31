@@ -129,7 +129,7 @@ class ObjectifyList(ObjectifyModel,list):
 
     def copy_inited(self,keep_name=True):
         if keep_name:
-            self.__init_kwargs__['name'] = self.name
+            self.__init_kwargs__['name'] = self.__key_name__
 
         cl = self.__class__(
             *self.__init_args__,

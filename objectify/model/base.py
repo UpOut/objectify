@@ -10,9 +10,9 @@ class ObjectifyModel(ObjectifyObject):
     __serializer__ = json.dumps
     __deserializer__ = json.loads
     
-    name = None
-    fetch_attrs = None
-    fetch_key = None
+    __key_name__ = None
+    __fetch_attrs__ = None
+    __fetch_key__ = None
 
     def __init__(self,name=None,fetch_key=False,fetch_attrs=[],
             serializer=None,deserializer=None,**kwargs):
@@ -24,9 +24,9 @@ class ObjectifyModel(ObjectifyObject):
             deserializer=deserializer,**kwargs
         )
 
-        self.name = name
-        self.fetch_attrs = set(fetch_attrs)
-        self.fetch_key = fetch_key
+        self.__key_name__ = name
+        self.__fetch_attrs__ = set(fetch_attrs)
+        self.__fetch_key__ = fetch_key
 
         self.__fetch_attr__ = None
         if serializer is not None:
@@ -46,7 +46,7 @@ class ObjectifyModel(ObjectifyObject):
 
     def copy_inited(self,keep_name=True):
         if keep_name:
-            self.__init_kwargs__['name'] = self.name
+            self.__init_kwargs__['name'] = self.__key_name__
 
         return self.__class__(
             *self.__init_args__,
