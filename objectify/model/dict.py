@@ -219,7 +219,8 @@ class ObjectifyDict(ObjectifyModel,dict):
     def to_collection(self):
         to_return = {}
 
-        for attr,obj in self.__dict__.iteritems():
+        for _,attr in self.__obj_attrs__.iteritems():
+            obj = self.__getattribute__(attr,raw=True)
             if isinstance(obj,ObjectifyProperty):
                 if not obj._auto_fetch_set:
                     #Auto fetch not specifically set
