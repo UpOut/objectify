@@ -50,6 +50,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                 not isinstance(self.__dynamic_class__,ObjectifyObject)):
             raise RuntimeError("__dynamic_class__ MUST be an instance of ObjectifyObject if it is set")
 
+        self._isolate_attributes()
 
     def __setattr__(self,name,val,raw=False):
         if name[-2:] == "__" and name[:2] == "__":
@@ -76,7 +77,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                 if isinstance(val,ObjectifyObject):
                     val = val.to_collection()
                 
-                _val = existing.copy_inited()
+                _val = existing#.copy_inited()
                 _val.from_collection(val)
 
                 val = _val
@@ -153,7 +154,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             return super(ObjectifyDict, self).__setattr__(name,_val)
         
 
-        _val = existing.copy_inited()
+        _val = existing#.copy_inited()
         _val.from_collection(val)
         
 
@@ -191,13 +192,23 @@ class ObjectifyDict(ObjectifyModel,dict):
         self.__obj_attrs__[name] = name
         if not isinstance(val,ObjectifyObject):
             
-            obj = self.__dynamic_class__.copy_inited()
+            obj = self.__dynamic_class__#.copy_inited()
             obj.__key_name__ = name
             obj.from_collection(val)
             super(ObjectifyDict, self).__setattr__(name,obj)
         else:
             val.__key_name__ = name
             super(ObjectifyDict, self).__setattr__(name,val)
+
+    def _isolate_attributes(self):
+        if self.__dynamic_class__ is not None:
+            self.__dynamic_class__ = self.__dynamic_class__.copy_inited()
+            
+        for _,attr in self.__obj_attrs__.iteritems():
+            self.set_raw_attribute(
+                attr,
+                self.get_raw_attribute(attr).copy_inited()
+            )
 
     def set_raw_attribute(self,name,val):
         return self.__setattr__(name,val,raw=True)
@@ -236,7 +247,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                     continue
 
                 obj = self.__getattribute__(attr,raw=True)
-                obj = obj.copy_inited()
+                obj = obj#.copy_inited()
                 self.__setattr__(attr,obj,raw=True)
         
 
@@ -265,11 +276,5 @@ class ObjectifyDict(ObjectifyModel,dict):
             *self.__init_args__,
             **self.__init_kwargs__
         )
-
-        for _,attr in cl.__obj_attrs__.iteritems():
-            cl.set_raw_attribute(
-                attr,
-                cl.get_raw_attribute(attr).copy_inited()
-            )
         
         return cl

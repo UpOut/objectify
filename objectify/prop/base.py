@@ -26,13 +26,15 @@ class ObjectifyProperty(ObjectifyObject):
     __value_fetched_value__ = None
 
     def __init__(self,name=None,fetch_key=False,default=None,
-            auto_fetch_default=False,auto_fetch=None):
+            auto_fetch_default=False,auto_fetch=None,*args,**kwargs):
         super(ObjectifyProperty, self).__init__(
+            *args,
             name=name, 
             fetch_key=fetch_key,
             default=default,
             auto_fetch_default=auto_fetch_default,
-            auto_fetch=auto_fetch
+            auto_fetch=auto_fetch,
+            **kwargs
         )
 
         self.__key_name__ = name

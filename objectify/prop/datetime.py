@@ -15,26 +15,37 @@ class SmartDateTime(ObjectifyProperty):
 
     to_type=datetime
 
+    def __init__(self,*args,**kwargs):
+        super(SmartDateTime, self).__init__(
+            *args,
+            **kwargs
+        )
+
+        self.__to_timezone__ = kwargs.get("to_timezone",None)
+        self.__timezone_convert__ = kwargs.get("timezone_convert",None)
+        self.__from_timezone__ = kwargs.get("from_timezone",None)
+
     def _to_type(self,value):
-        date = dateutil_parse(value)
+        if not isinstance(value,datetime):
+            value = dateutil_parse(value)
 
         if self.__to_timezone__:
             zone = pytz.timezone(self.__to_timezone__)
 
             if self.__to_timezone__:
                 if self.__timezone_convert__:
-                    if date.tzinfo is not None:
-                        date = zone.normalize(date.astimezone(zone))
+                    if value.tzinfo is not None:
+                        value = zone.normalize(value.astimezone(zone))
                     else:
                         if not self.__from_timezone__:
                             raise RuntimeError("Could not determine a timezone for datetime %s, use __from_timezone__" % (value))
 
                         from_zone = pytz.timezone(self.__from_timezone__)
 
-                        date = date.replace(tzinfo=from_zone)
-                        date = zone.normalize(date.astimezone(zone))
+                        value = value.replace(tzinfo=from_zone)
+                        value = zone.normalize(value.astimezone(zone))
                         
                 else:
-                    date = date.replace(tzinfo=zone)
+                    value = value.replace(tzinfo=zone)
 
-        return date
+        return value
