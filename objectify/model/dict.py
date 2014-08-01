@@ -101,6 +101,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         self._isolate_attributes()
 
     def __setattr__(self,name,val,raw=False):
+        
         if name[-2:] == "__" and name[:2] == "__":
             return super(ObjectifyDict, self).__setattr__(name,val)
         
@@ -131,7 +132,9 @@ class ObjectifyDict(ObjectifyModel,dict):
                 val = _val
 
         super(ObjectifyDict, self).__setattr__(name,val)
-        self.__handle_passdown__(name)
+
+        if not raw:
+            self.__handle_passdown__(name)
 
     def __getattribute__(self,name,raw=False):
         if name[-2:] == "__" and name[:2] == "__":
