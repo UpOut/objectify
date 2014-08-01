@@ -43,11 +43,56 @@ class ObjectifyDict(ObjectifyModel,dict):
     __obj_attrs__ = {}
 
 
+
+    """
+        The attribute used to fetch data about this object
+    """
     __fetch_attr__ = None
+
+
+    """
+        Set of attributes to exclude from the collection this object generates
+        NOT from the "from_collection" attribute
+    """
+    __exclude_from_collection__ = []
+
+    """
+        This set of attributes is a map of attributes that this object should 
+        pass down to other attributes, and which attributes they should be passed to
+
+        Format:
+        {
+            "from_attr" : [
+                ("to_attr.__key_name__","child_attr")
+            ]
+        }
+
+        When "self_attr" is set, the attribute "self_attr_2_attr" will also be set.
+        "self_attr_2_attr" is a child attribute of "self_attr_2", which is also an attribute of self
+    """
+    __passdown_attributes__ = {}
+
+    """
+        Attributes from which to passdown and the attributes which they will be passed to
+        Format:
+        {
+            "parent_attr" : "self_attr"
+        }
+    """
+    __passdown_from__ = None
 
     def __init__(self,*args,**kwargs):
         super(ObjectifyDict, self).__init__(*args,**kwargs)
         self.__obj_attrs__ = self.__obj_attrs__.copy()
+        self.__passdown_attributes__ = self.__passdown_attributes__.copy()
+        self.__exclude_from_collection__ = set(self.__exclude_from_collection__)
+
+        self.__passdown_from__ = kwargs.get("passdown_from",None)
+
+        if self.__passdown_from__ is not None:
+            if not isinstance(self.__passdown_from__,dict):
+                raise RuntimeError("passdown_from MUST be a dictionary")
+
 
         if (self.__dynamic_class__ is not None and 
                 not isinstance(self.__dynamic_class__,ObjectifyObject)):
@@ -86,6 +131,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                 val = _val
 
         super(ObjectifyDict, self).__setattr__(name,val)
+        self.__handle_passdown__(name)
 
     def __getattribute__(self,name,raw=False):
         if name[-2:] == "__" and name[:2] == "__":
@@ -128,7 +174,9 @@ class ObjectifyDict(ObjectifyModel,dict):
                 A dynamic attribute simply wants to adapt any value to the closest ObjectifyObject representation
                 In this case we already have a best fit, which is the raw value
             """
-            return super(ObjectifyDict, self).__setattr__(name,val)
+            super(ObjectifyDict, self).__setattr__(name,val)
+            self.__handle_passdown__(name)
+            return
 
         """
             This function handles setting attributes which are or subclass
@@ -144,7 +192,9 @@ class ObjectifyDict(ObjectifyModel,dict):
             _val = DynamicDict()
             _val.from_collection(val)
 
-            return super(ObjectifyDict, self).__setattr__(name,_val)
+            super(ObjectifyDict, self).__setattr__(name,_val)
+            self.__handle_passdown__(name)
+            return
 
         if isinstance(val,list):
             """
@@ -154,7 +204,9 @@ class ObjectifyDict(ObjectifyModel,dict):
             _val = DynamicList()
             _val.from_collection(val)
 
-            return super(ObjectifyDict, self).__setattr__(name,_val)
+            super(ObjectifyDict, self).__setattr__(name,_val)
+            self.__handle_passdown__(name)
+            return
         
 
         _val = existing#.copy_inited()
@@ -162,6 +214,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         
 
         super(ObjectifyDict, self).__setattr__(name,_val)
+        self.__handle_passdown__(name)
 
 
     def __setattr_dynamic__(self,name,val):
@@ -203,6 +256,20 @@ class ObjectifyDict(ObjectifyModel,dict):
             val.__key_name__ = name
             super(ObjectifyDict, self).__setattr__(name,val)
 
+        self.__handle_passdown__(name)
+
+    def __handle_passdown__(self,name):
+        if self.__passdown_attributes__ is not None:
+            if name in self.__passdown_attributes__:
+                for to,to_child in self.__passdown_attributes__[name]:
+                    raw_to = self.get_raw_attribute(to)
+                    raw_child = raw_to.get_raw_attribute(to_child)
+
+                    raw_child.from_collection(
+                        self.get_raw_attribute(name).to_collection()
+                    )
+
+
     def _isolate_attributes(self):
         if self.__dynamic_class__ is not None:
             self.__dynamic_class__ = self.__dynamic_class__.copy_inited()
@@ -230,21 +297,22 @@ class ObjectifyDict(ObjectifyModel,dict):
         to_return = {}
 
         for _,attr in self.__obj_attrs__.iteritems():
-            obj = self.__getattribute__(attr,raw=True)
-            if isinstance(obj,ObjectifyProperty):
-                if not obj._auto_fetch_set:
-                    #Auto fetch not specifically set
-                    if not obj.auto_fetch and attr in self.__fetch_attrs__:
-                        obj.auto_fetch = True
-                        to_return[obj.__key_name__] = obj.value
-                        obj.auto_fetch = False
+            if attr not in self.__exclude_from_collection__:
+                obj = self.__getattribute__(attr,raw=True)
+                if isinstance(obj,ObjectifyProperty):
+                    if not obj._auto_fetch_set:
+                        #Auto fetch not specifically set
+                        if not obj.auto_fetch and attr in self.__fetch_attrs__:
+                            obj.auto_fetch = True
+                            to_return[obj.__key_name__] = obj.value
+                            obj.auto_fetch = False
+                        else:
+                            to_return[obj.__key_name__] = obj.value
+
                     else:
                         to_return[obj.__key_name__] = obj.value
-
-                else:
-                    to_return[obj.__key_name__] = obj.value
-            elif isinstance(obj,ObjectifyObject):
-                to_return[obj.__key_name__] = obj.to_collection()
+                elif isinstance(obj,ObjectifyObject):
+                    to_return[obj.__key_name__] = obj.to_collection()
 
 
         return to_return

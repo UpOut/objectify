@@ -7,9 +7,11 @@ class ObjectifyDictType(type):
 
     def __new__(cls, name, bases, attrs):
         _attrs = {
-            '__obj_attrs__' : {}
+            '__obj_attrs__' : {},
+            '__passdown_attributes__' : {}
         }
 
+        _passdown_check = {}
         for attr,obj in attrs.iteritems():
             #Check ending first as this is less common
             _attrs[attr] = obj
@@ -24,8 +26,47 @@ class ObjectifyDictType(type):
                 
                 if _attrs[attr].__key_name__ in _attrs['__obj_attrs__']:
                     raise RuntimeError("Duplicate key %s" % _attrs[attr].__key_name__)
+
                 _attrs['__obj_attrs__'][_attrs[attr].__key_name__] = attr
-        
+            
+                try:
+                    if _attrs[attr].__passdown_from__ is not None:
+                        _passdown_check[attr] = _attrs[attr].__passdown_from__
+                except AttributeError:
+                    pass
+
+
+        for to_attr,passdown in _passdown_check.iteritems():
+
+            for from_attr,child_attr in passdown.iteritems():
+
+                if from_attr not in _attrs['__passdown_attributes__']:
+                    _attrs['__passdown_attributes__'][from_attr] = []
+
+                if isinstance(from_attr,basestring):
+                    if from_attr not in _attrs:
+                        raise RuntimeError("Cannot find passdown attribute %s in parent object" % (from_attr))
+
+                    from_attr = _attrs[from_attr]
+
+
+                if not isinstance(from_attr,ObjectifyObject):
+                    raise RuntimeError("passdown_from keys MUST be strings")
+
+                if not isinstance(child_attr,basestring):
+                    raise RuntimeError("passdown_from values MUST be strings")
+
+                from_attr = from_attr.__key_name__
+
+                _attrs['__passdown_attributes__'][from_attr].append(
+                    (to_attr,child_attr)
+                )                
+
+
+
+
+
+
         return super(ObjectifyDictType, cls).__new__(cls, name, bases, _attrs)
 
 class ObjectifyListType(type):

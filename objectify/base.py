@@ -24,7 +24,7 @@ class ObjectifyObject(object):
 
 
     def saveable_collection(self):
-        raise NotImplementedError()
+        return self.to_collection()
         
         
     def to_collection(self):
@@ -40,3 +40,17 @@ class ObjectifyObject(object):
             *self.__init_args__,
             **self.__init_kwargs__
         )
+"""
+
+
+
+    TOP LEVEL LOADERS:
+        WHY NECESSARY:
+            In certain cases we need to load lower level objects by a top level attribute
+        ALTERNATIVE:
+            Passing attributes down to lower level objects before loading them. 
+            THIS CANNOT JUST BE DONE ON TOP LEVEL LOAD! Reason is we may want to call the lower level load without loading the top level
+
+            This should be done when an attribute is 
+
+"""
