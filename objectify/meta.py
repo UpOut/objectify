@@ -25,12 +25,6 @@ class ObjectifyDictType(type):
                 if _attrs[attr].__key_name__ in _attrs['__obj_attrs__']:
                     raise RuntimeError("Duplicate key %s" % _attrs[attr].__key_name__)
                 _attrs['__obj_attrs__'][_attrs[attr].__key_name__] = attr
-
-                if _attrs[attr].__fetch_key__:
-                    if '__fetch_attr__' in _attrs:
-                        raise RuntimeError("Object's can only have a single fetch key")
-
-                    _attrs['__fetch_attr__'] = attr
         
         return super(ObjectifyDictType, cls).__new__(cls, name, bases, _attrs)
 

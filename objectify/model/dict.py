@@ -42,6 +42,9 @@ class ObjectifyDict(ObjectifyModel,dict):
     """
     __obj_attrs__ = {}
 
+
+    __fetch_attr__ = None
+
     def __init__(self,*args,**kwargs):
         super(ObjectifyDict, self).__init__(*args,**kwargs)
         self.__obj_attrs__ = self.__obj_attrs__.copy()
@@ -203,11 +206,18 @@ class ObjectifyDict(ObjectifyModel,dict):
     def _isolate_attributes(self):
         if self.__dynamic_class__ is not None:
             self.__dynamic_class__ = self.__dynamic_class__.copy_inited()
-            
+        
+        self.__fetch_attr__ = None
         for _,attr in self.__obj_attrs__.iteritems():
+            _obj = self.get_raw_attribute(attr)
+            if _obj.__fetch_key__:
+                if self.__fetch_attr__ is not None:
+                    raise RuntimeError("Object's can only have a single fetch key")
+                self.__fetch_attr__ = attr
+
             self.set_raw_attribute(
                 attr,
-                self.get_raw_attribute(attr).copy_inited()
+                _obj.copy_inited()
             )
 
     def set_raw_attribute(self,name,val):
