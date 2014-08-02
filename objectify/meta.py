@@ -11,6 +11,19 @@ class ObjectifyDictType(type):
             '__passdown_attributes__' : {}
         }
 
+        for base in bases:
+            _obj_attrs = None
+            try:
+                _obj_attrs = base.__obj_attrs__
+            except:
+                pass
+
+            if _obj_attrs:
+                _attrs['__obj_attrs__'] = dict(
+                    _attrs['__obj_attrs__'].items() + 
+                    _obj_attrs.items()
+                )
+
         _passdown_check = {}
         for attr,obj in attrs.iteritems():
             #Check ending first as this is less common
@@ -19,7 +32,6 @@ class ObjectifyDictType(type):
                 continue
 
             if isinstance(_attrs[attr],ObjectifyObject):
-
                 _attrs[attr] = _attrs[attr].copy_inited()
                 if not getattr(_attrs[attr],"__key_name__",None):
                     _attrs[attr].__key_name__ = attr

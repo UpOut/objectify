@@ -83,7 +83,9 @@ class ObjectifyDict(ObjectifyModel,dict):
 
     def __init__(self,*args,**kwargs):
         super(ObjectifyDict, self).__init__(*args,**kwargs)
+        
         self.__obj_attrs__ = self.__obj_attrs__.copy()
+
         self.__passdown_attributes__ = self.__passdown_attributes__.copy()
         self.__exclude_from_collection__ = set(self.__exclude_from_collection__)
 
@@ -101,7 +103,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         self._isolate_attributes()
 
     def __setattr__(self,name,val,raw=False):
-        
+
         if name[-2:] == "__" and name[:2] == "__":
             return super(ObjectifyDict, self).__setattr__(name,val)
         
