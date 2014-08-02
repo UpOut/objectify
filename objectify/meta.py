@@ -11,6 +11,7 @@ class ObjectifyDictType(type):
             '__passdown_attributes__' : {}
         }
 
+        _parent_attributes = set()
         for base in bases:
             _obj_attrs = None
             try:
@@ -24,6 +25,9 @@ class ObjectifyDictType(type):
                     _obj_attrs.items()
                 )
 
+        for key in _attrs['__obj_attrs__'].keys():
+            _parent_attributes.add(key)
+
         _passdown_check = {}
         for attr,obj in attrs.iteritems():
             #Check ending first as this is less common
@@ -36,7 +40,8 @@ class ObjectifyDictType(type):
                 if not getattr(_attrs[attr],"__key_name__",None):
                     _attrs[attr].__key_name__ = attr
                 
-                if _attrs[attr].__key_name__ in _attrs['__obj_attrs__']:
+                if (_attrs[attr].__key_name__ in _attrs['__obj_attrs__'] and 
+                        _attrs[attr].__key_name__ not in _parent_attributes):
                     raise RuntimeError("Duplicate key %s" % _attrs[attr].__key_name__)
 
                 _attrs['__obj_attrs__'][_attrs[attr].__key_name__] = attr

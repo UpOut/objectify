@@ -82,8 +82,7 @@ class ObjectifyDict(ObjectifyModel,dict):
     __passdown_from__ = None
 
     def __init__(self,*args,**kwargs):
-        super(ObjectifyDict, self).__init__(*args,**kwargs)
-        
+
         self.__obj_attrs__ = self.__obj_attrs__.copy()
 
         self.__passdown_attributes__ = self.__passdown_attributes__.copy()
@@ -101,6 +100,8 @@ class ObjectifyDict(ObjectifyModel,dict):
             raise RuntimeError("__dynamic_class__ MUST be an instance of ObjectifyObject if it is set")
 
         self._isolate_attributes()
+
+        super(ObjectifyDict, self).__init__(*args,**kwargs)
 
     def __setattr__(self,name,val,raw=False):
 

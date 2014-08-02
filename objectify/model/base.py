@@ -35,6 +35,10 @@ class ObjectifyModel(ObjectifyObject):
         if deserializer is not None:
             self.__deserializer__ = deserializer
 
+        default = kwargs.get("default",None)
+        if default:
+            self.from_collection(default)
+
 
     def serialize(self):
         return self.__serializer__(self.to_collection())

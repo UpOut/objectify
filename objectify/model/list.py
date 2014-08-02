@@ -13,13 +13,15 @@ class ObjectifyList(ObjectifyModel,list):
     __list_object__ = None
 
     def __init__(self,list_object=None,**kwargs):
-        super(ObjectifyList, self).__init__(list_object=list_object, **kwargs)
 
         if list_object is not None:
             self.__list_object__ = list_object
 
         if self.__list_object__ is None:
             raise RuntimeError("Cannot have an ObjectifyList without a __list_object__")
+
+        super(ObjectifyList, self).__init__(list_object=list_object, **kwargs)
+
 
     def __morph_item__(self,item):
         """
