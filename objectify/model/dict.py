@@ -82,7 +82,7 @@ class ObjectifyDict(ObjectifyModel,dict):
     __passdown_from__ = None
 
     def __init__(self,*args,**kwargs):
-
+        self.__fetch_attr__ = None
         self.__obj_attrs__ = self.__obj_attrs__.copy()
 
         self.__passdown_attributes__ = self.__passdown_attributes__.copy()

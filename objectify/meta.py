@@ -8,7 +8,7 @@ class ObjectifyDictType(type):
     def __new__(cls, name, bases, attrs):
         _attrs = {
             '__obj_attrs__' : {},
-            '__passdown_attributes__' : {}
+            '__passdown_attributes__' : {},
         }
 
         _parent_attributes = set()

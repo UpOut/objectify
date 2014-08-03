@@ -13,7 +13,8 @@ class ObjectifyList(ObjectifyModel,list):
     __list_object__ = None
 
     def __init__(self,list_object=None,**kwargs):
-
+        self.__fetch_attr__ = None
+        
         if list_object is not None:
             self.__list_object__ = list_object
 

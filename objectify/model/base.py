@@ -28,7 +28,6 @@ class ObjectifyModel(ObjectifyObject):
         self.__fetch_attrs__ = set(fetch_attrs)
         self.__fetch_key__ = fetch_key
 
-        self.__fetch_attr__ = None
         if serializer is not None:
             self.__serializer__ = serializer
         
