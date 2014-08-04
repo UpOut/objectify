@@ -6,24 +6,31 @@ from dateutil.parser import parse as dateutil_parse
 from datetime import datetime
 from .base import ObjectifyProperty
 
-class SmartDateTime(ObjectifyProperty):
+class SmartTimestamp(ObjectifyProperty):
     __to_timezone__ = None
     #If true, will convert to the to_timezone
     __timezone_convert__ = False
     #Used in timezone conversion if datetime does not have one
     __from_timezone__ = None
 
+    #Collection format
+    __outgoing_format__ = '%Y-%m-%d %H:%M:%S'
+
     to_type=datetime
 
     def __init__(self,*args,**kwargs):
-        super(SmartDateTime, self).__init__(
+        super(SmartTimestamp, self).__init__(
             *args,
             **kwargs
         )
 
         self.__to_timezone__ = kwargs.get("to_timezone",None)
-        self.__timezone_convert__ = kwargs.get("timezone_convert",None)
+        self.__timezone_convert__ = kwargs.get("timezone_convert",False)
         self.__from_timezone__ = kwargs.get("from_timezone",None)
+
+        _outgoing_format = kwargs.get("outgoing_format",None)
+        if _outgoing_format:
+            self.__outgoing_format__ = _outgoing_format
 
     def _to_type(self,value):
         if not isinstance(value,datetime):
@@ -47,5 +54,11 @@ class SmartDateTime(ObjectifyProperty):
                         
                 else:
                     value = value.replace(tzinfo=zone)
+
+        return value
+
+    def _outgoing_convert(self,value):
+        if value and isinstance(value, datetime):
+            return value.strftime(self.__outgoing_format__)
 
         return value

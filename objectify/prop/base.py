@@ -25,13 +25,16 @@ class ObjectifyProperty(ObjectifyObject):
     #The value used to fetch
     __value_fetched_value__ = None
 
-    def __init__(self,name=None,fetch_key=False,default=None,
+    def __init__(self,name=None,fetch_key=False,
+            default=None,incoming_default=None,outgoing_default=None,
             auto_fetch_default=False,auto_fetch=None,*args,**kwargs):
         super(ObjectifyProperty, self).__init__(
             *args,
             name=name, 
             fetch_key=fetch_key,
             default=default,
+            incoming_default=incoming_default,
+            outgoing_default=outgoing_default,
             auto_fetch_default=auto_fetch_default,
             auto_fetch=auto_fetch,
             **kwargs
@@ -39,8 +42,14 @@ class ObjectifyProperty(ObjectifyObject):
 
         self.__key_name__ = name
         self.__fetch_key__ = fetch_key
-        self.default = default
-        self.__value__ = default
+        
+        self.incoming_default = default
+        self.incoming_default = incoming_default
+
+        self.outgoing_default = default
+        self.outgoing_default = outgoing_default
+
+        self.__value__ = outgoing_default
         self.__value_set__ = False
 
         if auto_fetch is not None:
@@ -63,6 +72,9 @@ class ObjectifyProperty(ObjectifyObject):
 
     def _to_type(self,value):
         return self.to_type(value)
+
+    def _outgoing_convert(self,value):
+        return value
 
     def fetch(self):
         if not self.__fetch_object__:
@@ -93,10 +105,16 @@ class ObjectifyProperty(ObjectifyObject):
         return self.__value_retrieved__
 
     def from_collection(self,frm):
-        self.__value__ = self._to_type(frm)
+        if (frm == self.incoming_default or
+                frm == self.outgoing_default):
+            self.__value__ = self.outgoing_default
+            self.__value_set__ = False
+        else:    
+            self.__value__ = self._to_type(frm)
+
+            self.__value_set__ = True
 
         self.__value_fetched__ = False
-        self.__value_set__ = True
 
     def to_collection(self):
         if self.__value_set__:
@@ -107,7 +125,7 @@ class ObjectifyProperty(ObjectifyObject):
                     #Enable calling of .fetch() manually
                     return self.__value_retrieved__
                 else:
-                    return self.__value__
+                    return self._outgoing_convert(self.__value__)
         else:
             if self.auto_fetch_default:
                 return self.fetch()
@@ -116,7 +134,7 @@ class ObjectifyProperty(ObjectifyObject):
                     #Enable calling of .fetch() manually
                     return self.__value_retrieved__
                 else:
-                    return self.__value__
+                    return self._outgoing_convert(self.__value__)
 
     @property
     def value(self):
