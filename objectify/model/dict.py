@@ -237,7 +237,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                 not isinstance(self.__dynamic_class__,ObjectifyObject)):
             raise RuntimeError("__dynamic_class__ MUST be an instance of ObjectifyObject if it is set")
 
-        if not self.__dynamic_class__ and not self.__allow_classed_dynamics__:
+        if self.__dynamic_class__ is None and not self.__allow_classed_dynamics__:
             raise RuntimeError("To introduce dynamic attributes, please use __dynamic_class__ and/or __allow_classed_dynamics__")
 
         #We have a dynamic class
@@ -339,7 +339,8 @@ class ObjectifyDict(ObjectifyModel,dict):
         
 
         for attr,obj in dict.iteritems():
-            if self.__dynamic_class__ or self.__allow_classed_dynamics__:
+            if (self.__dynamic_class__ is not None or 
+                    self.__allow_classed_dynamics__):
                 self.__setattr__(attr,obj)
                 continue
 
