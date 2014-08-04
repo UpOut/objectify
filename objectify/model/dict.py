@@ -195,7 +195,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             """
 
             from .dynamic import DynamicDict
-            _val = DynamicDict()
+            _val = DynamicDict(name=name)
             _val.from_collection(val)
 
             super(ObjectifyDict, self).__setattr__(name,_val)
@@ -207,7 +207,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                 In this case we need to create a DynamicList object to properly fit our data
             """
             from .dynamic import DynamicList
-            _val = DynamicList()
+            _val = DynamicList(name=name)
             _val.from_collection(val)
 
             super(ObjectifyDict, self).__setattr__(name,_val)
@@ -224,6 +224,7 @@ class ObjectifyDict(ObjectifyModel,dict):
 
 
     def __setattr_dynamic__(self,name,val):
+
         """
             This function handles setting dynamic attributes with rules defined with
             __dynamic_class__ and __allow_classed_dynamics__
@@ -254,7 +255,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         self.__obj_attrs__[name] = name
         if not isinstance(val,ObjectifyObject):
             
-            obj = self.__dynamic_class__#.copy_inited()
+            obj = self.__dynamic_class__.copy_inited()
             obj.__key_name__ = name
             obj.from_collection(val)
             super(ObjectifyDict, self).__setattr__(name,obj)
@@ -263,6 +264,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             super(ObjectifyDict, self).__setattr__(name,val)
 
         self.__handle_passdown__(name)
+
 
     def __handle_passdown__(self,name):
         if self.__passdown_attributes__ is not None:
