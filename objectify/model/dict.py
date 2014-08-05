@@ -86,7 +86,12 @@ class ObjectifyDict(ObjectifyModel,dict):
         self.__obj_attrs__ = self.__obj_attrs__.copy()
 
         self.__passdown_attributes__ = self.__passdown_attributes__.copy()
-        self.__exclude_from_collection__ = set(self.__exclude_from_collection__)
+
+        _exclude_from_collection = kwargs.get("exclude_from_collection",None)
+        if _exclude_from_collection:
+            self.__exclude_from_collection__ = set(_exclude_from_collection)
+        else:
+            self.__exclude_from_collection__ = set(self.__exclude_from_collection__)
 
         self.__passdown_from__ = kwargs.get("passdown_from",None)
 
@@ -301,11 +306,16 @@ class ObjectifyDict(ObjectifyModel,dict):
     def get_raw_attribute(self,name):
         return self.__getattribute__(name,raw=True)
 
-    def to_collection(self):
+    def to_collection(self,exclude=None):
         to_return = {}
 
+        if not exclude:
+            exclude = self.__exclude_from_collection__
+        else:
+            exclude = set(exclude)
+
         for _,attr in self.__obj_attrs__.iteritems():
-            if attr not in self.__exclude_from_collection__:
+            if attr not in exclude:
                 obj = self.__getattribute__(attr,raw=True)
                 if isinstance(obj,ObjectifyProperty):
                     if not obj._auto_fetch_set:

@@ -108,11 +108,10 @@ class ObjectifyProperty(ObjectifyObject):
         if (frm == self.incoming_default or
                 frm == self.outgoing_default):
             self.__value__ = self.outgoing_default
-            self.__value_set__ = False
         else:    
             self.__value__ = self._to_type(frm)
 
-            self.__value_set__ = True
+        self.__value_set__ = True
 
         self.__value_fetched__ = False
 
