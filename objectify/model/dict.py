@@ -57,6 +57,13 @@ class ObjectifyDict(ObjectifyModel,dict):
     __exclude_from_collection__ = []
 
     """
+        Exclude empty values from generated collection
+        Can be "True" or "False" or a last of attribute names to exclude e.g.
+        ["name","date"]
+    """
+    __exclude_empty__ = False
+
+    """
         This set of attributes is a map of attributes that this object should 
         pass down to other attributes, and which attributes they should be passed to
 
@@ -88,10 +95,17 @@ class ObjectifyDict(ObjectifyModel,dict):
         self.__passdown_attributes__ = self.__passdown_attributes__.copy()
 
         _exclude_from_collection = kwargs.get("exclude_from_collection",None)
-        if _exclude_from_collection:
+        if _exclude_from_collection is not None:
             self.__exclude_from_collection__ = set(_exclude_from_collection)
         else:
             self.__exclude_from_collection__ = set(self.__exclude_from_collection__)
+
+        _exclude_empty = kwargs.get("exclude_empty",None)
+        if _exclude_empty is not None:
+            self.__exclude_empty__ = _exclude_empty
+
+        if isinstance(self.__exclude_empty__,list):
+            self.__exclude_empty__ = set(self.__exclude_empty__)
 
         self.__passdown_from__ = kwargs.get("passdown_from",None)
 
@@ -306,6 +320,15 @@ class ObjectifyDict(ObjectifyModel,dict):
     def get_raw_attribute(self,name):
         return self.__getattribute__(name,raw=True)
 
+    def empty(self):
+        for _,attr in self.__obj_attrs__.iteritems():
+            obj = self.__getattribute__(attr,raw=True)
+            if isinstance(obj,ObjectifyObject):
+                if not obj.empty():
+                    return False
+
+        return True
+
     def to_collection(self,exclude=None):
         to_return = {}
 
@@ -315,8 +338,19 @@ class ObjectifyDict(ObjectifyModel,dict):
             exclude = set(exclude)
 
         for _,attr in self.__obj_attrs__.iteritems():
-            if attr not in exclude:
-                obj = self.__getattribute__(attr,raw=True)
+            if isinstance(exclude, set) and attr in exclude:
+                continue
+
+            obj = self.__getattribute__(attr,raw=True)
+
+            if isinstance(obj,ObjectifyObject):
+                if self.__exclude_empty__ == True and obj.empty():
+                    continue
+                if (isinstance(self.__exclude_empty__, set) and 
+                        attr in self.__exclude_empty__ and
+                        obj.empty()):
+                    continue
+
                 if isinstance(obj,ObjectifyProperty):
                     if not obj._auto_fetch_set:
                         #Auto fetch not specifically set
@@ -329,7 +363,7 @@ class ObjectifyDict(ObjectifyModel,dict):
 
                     else:
                         to_return[obj.__key_name__] = obj.value
-                elif isinstance(obj,ObjectifyObject):
+                else:
                     to_return[obj.__key_name__] = obj.to_collection()
 
 

@@ -16,8 +16,8 @@ class ObjectifyProperty(ObjectifyObject):
 
     #Value passed to property
     __value__ = None
-    #Whether or not the value was specifically set (is it default?)
-    __value_set__ = False
+    #Whether or not the value was specifically set externally, default or not
+    __value_touched__ = False
     #If we've fetched the value
     __value_fetched__ = False
     #The value we retrieved on fetch
@@ -50,7 +50,7 @@ class ObjectifyProperty(ObjectifyObject):
         self.outgoing_default = outgoing_default
 
         self.__value__ = outgoing_default
-        self.__value_set__ = False
+        self.__value_touched__ = False
 
         if auto_fetch is not None:
             self._auto_fetch_set = True
@@ -75,6 +75,17 @@ class ObjectifyProperty(ObjectifyObject):
 
     def _outgoing_convert(self,value):
         return value
+
+    def empty(self):
+        if not self.__value_touched__:
+            return True
+
+        return self.is_default()
+
+    def is_default(self):
+        if self.__value__ == self.outgoing_default:
+            return True
+        return False
 
     def fetch(self):
         if not self.__fetch_object__:
@@ -111,12 +122,11 @@ class ObjectifyProperty(ObjectifyObject):
         else:    
             self.__value__ = self._to_type(frm)
 
-        self.__value_set__ = True
-
+        self.__value_touched__ = True
         self.__value_fetched__ = False
 
     def to_collection(self):
-        if self.__value_set__:
+        if self.is_default():
             if self.auto_fetch:
                 return self.fetch()
             else:
