@@ -3,7 +3,7 @@
 import pytz
 from dateutil.parser import parse as dateutil_parse
 
-from datetime import datetime
+from datetime import datetime, date
 from .base import ObjectifyProperty
 
 class SmartTimestamp(ObjectifyProperty):
@@ -33,6 +33,9 @@ class SmartTimestamp(ObjectifyProperty):
             self.__outgoing_format__ = _outgoing_format
 
     def _to_type(self,value):
+        if isinstance(value,date):
+            value = datetime.combine(value, datetime.min.time())
+            
         if not isinstance(value,datetime):
             value = dateutil_parse(value)
 
