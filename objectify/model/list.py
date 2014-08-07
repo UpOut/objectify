@@ -113,6 +113,10 @@ class ObjectifyList(ObjectifyModel,list):
     def get_raw_item(self,key):
         return self.__getitem__(key,raw=True)
 
+    def empty(self):
+        return not bool(self)
+
+
     def to_collection(self):
         to_return = []
         for obj in self:
