@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 import sys
 
-from upoutdf import __version__
+from objectify import __version__
 
 setup(
 	name = 'objectify',
