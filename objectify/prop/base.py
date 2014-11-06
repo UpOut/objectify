@@ -89,9 +89,7 @@ class ObjectifyProperty(ObjectifyObject):
         return False
 
     def fetch(self):
-        import traceback
-        traceback.print_tb()
-        print "ATTEMPTING FETCH"
+
         if not isinstance(self.__fetch_object__,ObjectifyObject):
             raise RuntimeError("Cannot fetch value without fetch_object")
 
