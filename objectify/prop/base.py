@@ -28,7 +28,7 @@ class ObjectifyProperty(ObjectifyObject):
     def __init__(self,name=None,fetch_key=False,
             default=None,incoming_default=None,outgoing_default=None,
             auto_fetch_default=False,auto_fetch=None,*args,**kwargs):
-    
+
         super(ObjectifyProperty, self).__init__(
             *args,
             name=name, 
@@ -89,6 +89,7 @@ class ObjectifyProperty(ObjectifyObject):
         return False
 
     def fetch(self):
+        print "ATTEMPTING FETCH"
         if not isinstance(self.__fetch_object__,ObjectifyObject):
             raise RuntimeError("Cannot fetch value without fetch_object")
 
