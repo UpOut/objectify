@@ -63,9 +63,8 @@ class ObjectifyProperty(ObjectifyObject):
             else:
                 self.auto_fetch = True
 
-        print self.__fetch_object__
-        if self.auto_fetch and not self.__fetch_object__:
-            raise RuntimeError("Cannot auto_fetch property without fetch_object")
+        if self.auto_fetch and not isinstance(self.__fetch_object__,ObjectifyObject):
+            raise RuntimeError("Cannot auto_fetch property without fetch_object that is an ObjectifyObject")
 
         self.auto_fetch_default = auto_fetch_default
         self.__value_fetched__ = False
