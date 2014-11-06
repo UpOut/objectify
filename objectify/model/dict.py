@@ -127,7 +127,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         if name[-2:] == "__" and name[:2] == "__":
             return super(ObjectifyDict, self).__setattr__(name,val)
         
-        existing = getattr(self,name,None)
+        existing = None
         try:
             existing = self.__getattribute__(name,raw=True)
         except Exception as e:
