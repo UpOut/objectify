@@ -128,24 +128,16 @@ class ObjectifyProperty(ObjectifyObject):
         self.__value_fetched__ = False
 
     def to_collection(self):
-        if self.is_default():
-            if self.auto_fetch:
-                return self.fetch()
-            else:
-                if self.__value_fetched__:
-                    #Enable calling of .fetch() manually
-                    return self.__value_retrieved__
-                else:
-                    return self._outgoing_convert(self.__value__)
+        if self.is_default() and self.auto_fetch_default:
+            return self.fetch()
+        elif not self.is_default() and self.auto_fetch:
+            return self.fetch()
+
+        if self.__value_fetched__:
+            #Enable calling of .fetch() manually
+            return self.__value_retrieved__
         else:
-            if self.auto_fetch_default:
-                return self.fetch()
-            else:
-                if self.__value_fetched__:
-                    #Enable calling of .fetch() manually
-                    return self.__value_retrieved__
-                else:
-                    return self._outgoing_convert(self.__value__)
+            return self._outgoing_convert(self.__value__)
 
     @property
     def value(self):
