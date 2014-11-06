@@ -28,6 +28,7 @@ class ObjectifyProperty(ObjectifyObject):
     def __init__(self,name=None,fetch_key=False,
             default=None,incoming_default=None,outgoing_default=None,
             auto_fetch_default=False,auto_fetch=None,*args,**kwargs):
+        print "HELLO"
         super(ObjectifyProperty, self).__init__(
             *args,
             name=name, 
@@ -62,6 +63,7 @@ class ObjectifyProperty(ObjectifyObject):
             else:
                 self.auto_fetch = True
 
+        print self.__fetch_object__
         if self.auto_fetch and not self.__fetch_object__:
             raise RuntimeError("Cannot auto_fetch property without fetch_object")
 
