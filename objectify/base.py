@@ -22,10 +22,8 @@ class ObjectifyObject(object):
     def fetch_from(self,frm):
         raise NotImplementedError()
 
-
-    def saveable_collection(self):
-        return self.to_collection()
-        
+    def transform_fetch(self,fetched):
+        raise NotImplementedError()
         
     def to_collection(self):
         raise NotImplementedError()

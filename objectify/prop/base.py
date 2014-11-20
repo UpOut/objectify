@@ -112,8 +112,7 @@ class ObjectifyProperty(ObjectifyObject):
             if self.__fetch_wrapper_func__ is not None:
                 fetch_from = self.__fetch_wrapper_func__(fetch_from)
 
-            self.__value_retrieved__.fetch_from(_fetch_value)
-            self.__value_retrieved__ = self.__value_retrieved__.to_collection()
+            self.__value_retrieved__.fetch_from(fetch_from)
 
         return self.__value_retrieved__
 
@@ -135,7 +134,7 @@ class ObjectifyProperty(ObjectifyObject):
 
         if self.__value_fetched__:
             #Enable calling of .fetch() manually
-            return self.__value_retrieved__
+            return self.__value_retrieved__.to_collection()
         else:
             return self._outgoing_convert(self.__value__)
 
