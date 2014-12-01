@@ -19,7 +19,7 @@ class ObjectifyObject(object):
     def fetch(self):
         raise NotImplementedError()
 
-    def fetch_from(self,frm):
+    def fetch_from(self,frm,**kwargs):
         raise NotImplementedError()
 
     def transform_fetch(self,fetched):
