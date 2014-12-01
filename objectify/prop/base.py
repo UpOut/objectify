@@ -26,7 +26,7 @@ class ObjectifyProperty(ObjectifyObject):
     __value_fetched_value__ = None
 
     def __init__(self,name=None,fetch_key=False,
-            default=None,incoming_default=None,outgoing_default=None,
+            default=None,can_fetch_default=True,
             auto_fetch_default=False,auto_fetch=None,*args,**kwargs):
 
         super(ObjectifyProperty, self).__init__(
@@ -34,8 +34,7 @@ class ObjectifyProperty(ObjectifyObject):
             name=name, 
             fetch_key=fetch_key,
             default=default,
-            incoming_default=incoming_default,
-            outgoing_default=outgoing_default,
+            can_fetch_default=can_fetch_default,
             auto_fetch_default=auto_fetch_default,
             auto_fetch=auto_fetch,
             **kwargs
@@ -45,12 +44,15 @@ class ObjectifyProperty(ObjectifyObject):
         self.__fetch_key__ = fetch_key
         
         self.incoming_default = default
-        self.incoming_default = incoming_default
+
+        if 'incoming_default' in kwargs:
+            self.incoming_default = kwargs['incoming_default']
 
         self.outgoing_default = default
-        self.outgoing_default = outgoing_default
+        if 'outgoing_default' in kwargs:
+            self.outgoing_default = kwargs['outgoing_default']
 
-        self.__value__ = outgoing_default
+        self.__value__ = self.outgoing_default
         self.__value_touched__ = False
 
         if auto_fetch is not None:
@@ -67,6 +69,11 @@ class ObjectifyProperty(ObjectifyObject):
             raise RuntimeError("Cannot auto_fetch property without fetch_object that is an ObjectifyObject")
 
         self.auto_fetch_default = auto_fetch_default
+        if self.auto_fetch_default:
+            #If we are auto fetching default we have to be able to!
+            can_fetch_default = True
+
+        self.can_fetch_default = can_fetch_default
         self.__value_fetched__ = False
         self.__value_retrieved__ = None
         self.__value_fetched_value__ = None
@@ -89,6 +96,9 @@ class ObjectifyProperty(ObjectifyObject):
         return False
 
     def fetch(self,fetch_from_kwargs={}):
+
+        if self.is_default() and not self.can_fetch_default:
+            return self.__value_retrieved__
 
         if not isinstance(self.__fetch_object__,ObjectifyObject):
             raise RuntimeError("Cannot fetch value without fetch_object")
