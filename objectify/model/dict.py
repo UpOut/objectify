@@ -369,6 +369,31 @@ class ObjectifyDict(ObjectifyModel,dict):
 
         return to_return
 
+    def from_collection_handle_passdown(self,frm,dict,completed=None):
+        if completed is None:
+            completed = set()
+
+
+        if frm in completed:
+            return completed
+
+        for to,to_child in self.__passdown_attributes__[frm]:
+            if to in self.__passdown_attributes__:
+                completed = self.from_collection_handle_passdown(to,dict,completed)
+            
+        if frm in dict:
+            if (self.__dynamic_class__ is not None or 
+                    self.__allow_classed_dynamics__):
+                self.__setattr__(frm,dict[frm])
+            else:
+                name = self.__obj_attrs__[frm]
+                self.__setattr__(name,dict[frm])
+
+        completed.add(frm)    
+
+        return completed
+
+
     def from_collection(self,dict,clear=True):
         #Clear out existing attributes
 
@@ -381,8 +406,20 @@ class ObjectifyDict(ObjectifyModel,dict):
                 obj = obj#.copy_inited()
                 self.__setattr__(attr,obj,raw=True)
         
+        completed = set()
+        
+        #If we have passdown attributes, we'll want to set those up first
+        if self.__passdown_attributes__ is not None:
+            for frm in self.__passdown_attributes__.keys():
+                completed = self.from_collection_handle_passdown(
+                    frm,
+                    dict
+                )
 
         for attr,obj in dict.iteritems():
+            if attr in completed:
+                continue
+
             if (self.__dynamic_class__ is not None or 
                     self.__allow_classed_dynamics__):
                 self.__setattr__(attr,obj)
