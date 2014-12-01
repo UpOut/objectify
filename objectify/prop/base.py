@@ -88,7 +88,7 @@ class ObjectifyProperty(ObjectifyObject):
             return True
         return False
 
-    def fetch(self):
+    def fetch(self,fetch_from_kwargs={}):
 
         if not isinstance(self.__fetch_object__,ObjectifyObject):
             raise RuntimeError("Cannot fetch value without fetch_object")
@@ -112,7 +112,7 @@ class ObjectifyProperty(ObjectifyObject):
             if self.__fetch_wrapper_func__ is not None:
                 fetch_from = self.__fetch_wrapper_func__(fetch_from)
 
-            self.__value_retrieved__.fetch_from(fetch_from)
+            self.__value_retrieved__.fetch_from(fetch_from,**fetch_from_kwargs)
 
         return self.__value_retrieved__
 
