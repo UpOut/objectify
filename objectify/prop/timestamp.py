@@ -33,7 +33,7 @@ class SmartTimestamp(ObjectifyProperty):
             self.__outgoing_format__ = _outgoing_format
 
     def _to_type(self,value):
-        if isinstance(value,date):
+        if isinstance(value,date) and not isinstance(value,datetime):
             value = datetime.combine(value, datetime.min.time())
             
         if not isinstance(value,datetime):
