@@ -120,23 +120,3 @@ zzz.from_collection({
 print "------------------"
 print zzz.to_collection()
 """
-
-"""
-curl -XPOST 'http://127.0.0.1:5000/objects/search/user' -d '{
-    "query" : {
-        "test" : {
-            "my" : {
-                "nest" : [
-                    "value",
-                    {
-                        "nest" : "google",
-                        "google" : {
-                            "revenue" : "advertising"
-                        }
-                    }
-                ]
-            }
-        }
-    }
-}'
-"""

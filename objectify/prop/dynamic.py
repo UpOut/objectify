@@ -17,13 +17,13 @@ class Dynamic(ObjectifyProperty):
         try:
             _long = long(frm)
         except:
-            pass
+            _long = None
 
         _int = None
         try:
             _int = int(frm)
         except:
-            pass
+            _int = None
 
         if _int is None and _long is None:
             return None
@@ -43,13 +43,13 @@ class Dynamic(ObjectifyProperty):
         try:
             _float = float(frm)
         except:
-            pass
+            _float = None
 
         _int = None
         try:
             _int = int(frm)
         except:
-            pass
+            _int = None
 
         if _int is None and _float is None:
             return None
