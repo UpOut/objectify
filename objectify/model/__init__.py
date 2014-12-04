@@ -3,3 +3,4 @@
 from .dict import ObjectifyDict
 from .list import ObjectifyList
 from .dynamic import DynamicDict, DynamicList
+from .base import ObjectifyModel
