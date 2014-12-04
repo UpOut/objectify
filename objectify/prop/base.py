@@ -138,9 +138,9 @@ class ObjectifyProperty(ObjectifyObject):
 
     def to_collection(self):
         if self.is_default() and self.auto_fetch_default:
-            return self.fetch()
+            self.fetch()
         elif not self.is_default() and self.auto_fetch:
-            return self.fetch()
+            self.fetch()
 
         if self.__value_fetched__:
             #Enable calling of .fetch() manually
