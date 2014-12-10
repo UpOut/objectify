@@ -104,6 +104,10 @@ class ObjectifyList(ObjectifyModel,list):
             yield self.__getitem__(i,raw=raw)
             i += 1
 
+    def __raw_iter__(self):
+        #We also want to bypass our overload
+        return super(ObjectifyList, self).__iter__()
+
     def append(self,item):
         _item = self.__morph_item__(item)
         super(ObjectifyList, self).append(_item)
@@ -125,7 +129,7 @@ class ObjectifyList(ObjectifyModel,list):
 
     def to_collection(self):
         to_return = []
-        for obj in self.__iter__(raw=True):
+        for obj in self.__raw_iter__():
             to_return.append(obj.to_collection())
 
         return to_return
