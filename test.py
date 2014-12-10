@@ -11,7 +11,9 @@ from dateutil.parser import parse as dateutil_parse
 class Cool(ObjectifyDict):
     neat = String()
     toooz = String()
-
+    
+    testMore = ObjectifyList(Integer(),default=[])
+    
 class TestWoot(ObjectifyDict):
 
     example = String()
@@ -20,17 +22,21 @@ class TestWoot(ObjectifyDict):
 
     tester = ObjectifyList(Cool())
 
-testah = TestWoot(exclude_empty=["test"])
 
-print len(testah.tester)
-print testah.tester.empty()
-testah.tester.append({
-    "neat" : "OK",
-    "toooz" : "YUp"
-    })
+test = Cool()
+test.from_collection({"neat":"Hello!","toooz":"World?","testMore":[1,2,3,4,5,6,7]})
 
-print testah.tester.empty()
-print len(testah.tester)
+print type(test.neat)
+print type(test.toooz)
+print type(test.testMore)
+print "----"
+print test.testMore[0]
+print "======="
+
+for n in test.testMore:
+    print n
+
+
 """
 class _UserActionsDynamic(ObjectifyDict):
     __dynamic_class__ = None

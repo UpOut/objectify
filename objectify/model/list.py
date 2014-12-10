@@ -98,6 +98,12 @@ class ObjectifyList(ObjectifyModel,list):
         
         return existing
 
+    def __iter__(self,raw=False):
+        i = 0
+        while i < len(self):
+            yield self.__getitem__(i,raw=raw)
+            i += 1
+
     def append(self,item):
         _item = self.__morph_item__(item)
         super(ObjectifyList, self).append(_item)
