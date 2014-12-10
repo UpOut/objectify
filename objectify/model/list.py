@@ -125,7 +125,7 @@ class ObjectifyList(ObjectifyModel,list):
 
     def to_collection(self):
         to_return = []
-        for obj in self:
+        for obj in self.__iter__(raw=True):
             to_return.append(obj.to_collection())
 
         return to_return
