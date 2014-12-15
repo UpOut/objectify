@@ -8,33 +8,70 @@ from objectify.prop.timestamp import SmartTimestamp
 from dateutil.parser import parse as dateutil_parse
 
 
-class Cool(ObjectifyDict):
-    neat = String()
-    toooz = String()
+class TestLower(ObjectifyDict):
+    nested_string_A = String()
+    nested_string_B = String()
     
-    testMore = ObjectifyList(Integer(),default=[])
+    nested_LIST = ObjectifyList(Integer(),default=[])
     
-class TestWoot(ObjectifyDict):
+class Test(ObjectifyDict):
 
-    example = String()
-    wooter = String()
-    test = Cool()
+    string_A = String()
+    string_B = String()
+    test_OBJ = TestLower()
 
-    tester = ObjectifyList(Cool())
+    test_LIST = ObjectifyList(TestLower())
 
 
-test = Cool()
-test.from_collection({"neat":"Hello!","toooz":"World?","testMore":[1,2,3,4,5,6,7]})
 
-print type(test.neat)
-print type(test.toooz)
-print type(test.testMore)
-print "----"
-print test.testMore[0]
-print "======="
 
-for n in test.testMore:
-    print n
+
+
+
+
+
+
+test = Test()
+test.from_collection({
+    "string_A":"Hello!",
+    "string_B":"World?",
+    "test_OBJ" : {
+        "nested_string_A" : "IN OBJ",
+        "nested_string_B" : "IN OBJ",
+        "nested_LIST" : [1,2,3,4]
+    },
+    "test_LIST" : [{
+        "nested_string_A" : "NEAT IN LIST 0",
+        "nested_string_B" : "IN LIST 0",
+        "nested_LIST" : [5,6,7,8]
+    },
+    {
+        "nested_string_A" : "NEAT IN LIST 1",
+        "nested_string_B" : "IN LIST 1",
+        "nested_LIST" : [9,10,11]
+    }]
+})
+
+
+
+
+
+
+
+
+print test.to_collection()
+print test.to_collection(
+    exclude=[
+    "string_A",
+    "test_OBJ.nested_string_A",
+    "test_LIST.[0].nested_string_B"]
+)
+
+
+
+
+
+
 
 
 """

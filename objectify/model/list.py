@@ -127,10 +127,45 @@ class ObjectifyList(ObjectifyModel,list):
         return not bool(self)
 
 
-    def to_collection(self):
+    def verify_exclude(self,exclude):
+        #Raise an exception if we get an empty value
+
+        for ex in exclude:
+            if not ex:
+                raise RuntimeError("Empty area in exclude path %s in %s" % (exclude,self.__repr__()))
+
+
+    def split_exclude(self,exclude):
+
+        passdown = set()
+        for ex in exclude:
+            ex_l = ex.split(".")
+            self.verify_exclude(ex_l)
+
+            if len(ex_l) < 2:
+                raise RuntimeError("Unable to handle ending exclude path in ObjectifyList %s!" % self.__repr__())
+
+            if ex_l[0] != "[0]":
+                raise RuntimeError("Exclude path touches ObjectifyList without [0]!")
+
+            passdown.add(".".join(ex_l[1:]))
+
+        return passdown
+
+    def to_collection(self,exclude=None):
         to_return = []
+        
+        passdown_exclude = None
+        if exclude:
+            passdown_exclude = self.split_exclude(exclude)
+
         for obj in self.__raw_iter__():
-            to_return.append(obj.to_collection())
+            if passdown_exclude:
+                to_return.append(obj.to_collection(
+                    exclude=passdown_exclude
+                ))
+            else:
+                to_return.append(obj.to_collection())
 
         return to_return
 

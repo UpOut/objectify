@@ -164,6 +164,9 @@ class ObjectifyDict(ObjectifyModel,dict):
 
         try:
             existing = super(ObjectifyDict, self).__getattribute__(name)
+            if raw:
+                return existing
+
         except Exception as e:
             existing = None
         
@@ -329,16 +332,59 @@ class ObjectifyDict(ObjectifyModel,dict):
 
         return True
 
+    def verify_exclude(self,exclude):
+        #Raise an exception if we get an empty value
+
+        for ex in exclude:
+            if not ex:
+                raise RuntimeError("Empty area in exclude path %s in %s" % (exclude,self.__repr__()))
+
+
+    def split_exclude(self,exclude):
+        """
+            Returns tuple
+            (this level exclude, passdown exclude)
+        """
+        this_level = set()
+        passdown = {}
+        for ex in exclude:
+            ex_l = ex.split(".")
+            self.verify_exclude(ex_l)
+
+            _len = len(ex_l)
+
+            if _len == 0:
+                raise RuntimeError("Broken exclude path in %s" % self.__repr__())
+            elif _len == 1:
+                this_level.add(ex_l[0])
+            else:
+                if ex_l[0] not in passdown:
+                    passdown[ex_l[0]] = set()
+
+                passdown[ex_l[0]].add(".".join(ex_l[1:]))
+
+        return this_level, passdown
+
+
     def to_collection(self,exclude=None):
         to_return = {}
+
+        #For notes on the exclude path, see EXCLUDE.rst
+
 
         if not exclude:
             exclude = self.__exclude_from_collection__
         else:
             exclude = set(exclude)
 
+        this_level_exclude = None
+        passdown_exclude = {}
+
+        if exclude:
+            this_level_exclude,passdown_exclude = self.split_exclude(exclude)
+
         for _,attr in self.__obj_attrs__.iteritems():
-            if isinstance(exclude, set) and attr in exclude:
+            if this_level_exclude is not None and attr in this_level_exclude:
                 continue
 
             obj = self.__getattribute__(attr,raw=True)
@@ -364,7 +410,12 @@ class ObjectifyDict(ObjectifyModel,dict):
                     else:
                         to_return[obj.__key_name__] = obj.value
                 else:
-                    to_return[obj.__key_name__] = obj.to_collection()
+                    if attr in passdown_exclude:
+                        to_return[obj.__key_name__] = obj.to_collection(
+                            exclude=passdown_exclude[attr]
+                        )
+                    else:
+                        to_return[obj.__key_name__] = obj.to_collection()
 
 
         return to_return
