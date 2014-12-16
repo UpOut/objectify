@@ -323,8 +323,23 @@ class ObjectifyDict(ObjectifyModel,dict):
     def get_raw_attribute(self,name):
         return self.__getattribute__(name,raw=True)
 
-    def empty(self):
+
+    def empty(self,exclude_fetch_key=False):
+        exclude = None
+        if exclude_fetch_key:
+            if self.__fetch_attr__ is not None:
+                exclude = set([self.__fetch_attr__])
+        
+        return self._empty(exclude=exclude)
+
+    def _empty(self,exclude=None):
+        if exclude:
+            exclude = set(exclude):
+
         for _,attr in self.__obj_attrs__.iteritems():
+            if attr in exclude:
+                continue
+
             obj = self.__getattribute__(attr,raw=True)
             if isinstance(obj,ObjectifyObject):
                 if not obj.empty():
