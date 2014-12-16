@@ -329,12 +329,12 @@ class ObjectifyDict(ObjectifyModel,dict):
         if exclude_fetch_key:
             if self.__fetch_attr__ is not None:
                 exclude = set([self.__fetch_attr__])
-        
+
         return self._empty(exclude=exclude)
 
     def _empty(self,exclude=None):
         if exclude:
-            exclude = set(exclude):
+            exclude = set(exclude)
 
         for _,attr in self.__obj_attrs__.iteritems():
             if attr in exclude:
