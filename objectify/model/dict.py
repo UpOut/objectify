@@ -337,7 +337,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             exclude = set(exclude)
 
         for _,attr in self.__obj_attrs__.iteritems():
-            if attr in exclude:
+            if exclude is not None and attr in exclude:
                 continue
 
             obj = self.__getattribute__(attr,raw=True)
