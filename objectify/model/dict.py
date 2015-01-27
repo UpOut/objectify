@@ -417,8 +417,10 @@ class ObjectifyDict(ObjectifyModel,dict):
                         #Auto fetch not specifically set
                         if not obj.auto_fetch and attr in self.__fetch_attrs__:
                             obj.auto_fetch = True
-                            to_return[obj.__key_name__] = obj.value
-                            obj.auto_fetch = False
+                            try:
+                                to_return[obj.__key_name__] = obj.value
+                            finally:
+                                obj.auto_fetch = False
                         else:
                             to_return[obj.__key_name__] = obj.value
 
@@ -500,7 +502,7 @@ class ObjectifyDict(ObjectifyModel,dict):
 
              
     def fetch(self):
-        _id = getattr(self,self.__fetch_attr__)
+        _id = self.data_to_fetch()
         return self.fetch_from(_id)
 
     def copy_inited(self,keep_name=True):

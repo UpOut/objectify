@@ -39,6 +39,9 @@ class ObjectifyModel(ObjectifyObject):
             self.from_collection(default)
 
 
+    def data_to_fetch(self):
+        return getattr(self,self.__fetch_attr__)
+        
     def serialize(self):
         return self.__serializer__(self.to_collection())
 
