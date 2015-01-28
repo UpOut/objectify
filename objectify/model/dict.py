@@ -502,7 +502,7 @@ class ObjectifyDict(ObjectifyModel,dict):
 
              
     def fetch(self):
-        _id = self.data_to_fetch()
+        _id = self.fetch_key_value()
         return self.fetch_from(_id)
 
     def copy_inited(self,keep_name=True):
