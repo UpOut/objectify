@@ -100,12 +100,13 @@ class ObjectifyProperty(ObjectifyObject):
 
     def _setup_passdown(self,to_object):
 
-        if self.__passdown_to_fetch_object__ and to_object:
+        if (self.__passdown_to_fetch_object__ and
+                isinstance(to_object,ObjectifyObject)):
 
             for to_attr, data in self.__passdown_to_fetch_object__.iteritems():
 
                 raw_child = to_object.get_raw_attribute(to_attr)
-
+                
                 raw_child.from_collection(
                     data
                 )
@@ -153,7 +154,7 @@ class ObjectifyProperty(ObjectifyObject):
             self.__value_fetched_value__ = _fetch_value
             self.__value_fetched__ = True
             self.__value_retrieved__ = self.__fetch_object__.copy_inited()
-            
+                
             self._setup_passdown(self.__value_retrieved__)
 
             fetch_from = _fetch_value
