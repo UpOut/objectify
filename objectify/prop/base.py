@@ -87,8 +87,8 @@ class ObjectifyProperty(ObjectifyObject):
         if not self.__passdown_to_fetch_object__:
             self.__passdown_to_fetch_object__ = {}
 
-        if not self.__fetch_object__:
-            raise RuntimeError("Must have a fetch object o handle passdowns!")
+        if not isinstance(self.__fetch_object__,ObjectifyObject):
+            raise RuntimeError("Must have a fetch object to handle passdowns!")
 
         self.__passdown_to_fetch_object__[to_attr] = data
 

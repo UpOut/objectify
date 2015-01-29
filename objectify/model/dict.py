@@ -309,7 +309,6 @@ class ObjectifyDict(ObjectifyModel,dict):
                             to_child,
                             data_to_pass
                         )
-                        raw_to._setup_passdown()
 
 
     def _isolate_attributes(self):
