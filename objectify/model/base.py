@@ -1,6 +1,13 @@
 # coding: utf-8
 
-import json
+#In order of performance
+try:
+    import ujson as json
+except ImportError:
+    try:
+        import simplejson as json
+    except ImportError:
+        import json
 
 from ..base import ObjectifyObject
 

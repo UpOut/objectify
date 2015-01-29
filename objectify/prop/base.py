@@ -80,11 +80,12 @@ class ObjectifyProperty(ObjectifyObject):
         self.__value_retrieved__ = None
         self.__value_fetched_value__ = None
         self.__passdown_to_fetch_object__ = None
+        self.__passdown_from__ = kwargs.get("passdown_from",None)
 
 
     def _add_passdown_value(self,to_attr,data):
         if not self.__passdown_to_fetch_object__:
-            self.__passdown_to_fetch_object__ = []
+            self.__passdown_to_fetch_object__ = {}
 
         if not self.__fetch_object__:
             raise RuntimeError("Must have a fetch object o handle passdowns!")
