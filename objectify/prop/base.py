@@ -12,6 +12,8 @@ class ObjectifyProperty(ObjectifyObject):
     #Use what it returns to fetch
     __fetch_wrapper_func__ = None
 
+    __passdown_to_fetch_object__ = None
+
     name = None
 
     #Value passed to property
@@ -77,6 +79,39 @@ class ObjectifyProperty(ObjectifyObject):
         self.__value_fetched__ = False
         self.__value_retrieved__ = None
         self.__value_fetched_value__ = None
+        self.__passdown_to_fetch_object__ = None
+
+
+    def _add_passdown_value(self,to_attr,data):
+        if not self.__passdown_to_fetch_object__:
+            self.__passdown_to_fetch_object__ = []
+
+        if not self.__fetch_object__:
+            raise RuntimeError("Must have a fetch object o handle passdowns!")
+
+        self.__passdown_to_fetch_object__[to_attr] = data
+
+        raw_child = self.__fetch_object__.get_raw_attribute(to_attr)
+
+        raw_child.from_collection(
+            data
+        )
+
+    def _setup_passdown(self,to_object):
+
+        if self.__passdown_to_fetch_object__ and to_object:
+
+            for to_attr, data in self.__passdown_to_fetch_object__.iteritems():
+
+                raw_child = to_object.get_raw_attribute(to_attr)
+
+                raw_child.from_collection(
+                    data
+                )
+    
+
+    def _access_fetch_object(self):
+        return self.__fetch_object__
 
     def _to_type(self,value):
         return self.to_type(value)
@@ -117,6 +152,8 @@ class ObjectifyProperty(ObjectifyObject):
             self.__value_fetched_value__ = _fetch_value
             self.__value_fetched__ = True
             self.__value_retrieved__ = self.__fetch_object__.copy_inited()
+            
+            self._setup_passdown(self.__value_retrieved__)
 
             fetch_from = _fetch_value
             if self.__fetch_wrapper_func__ is not None:

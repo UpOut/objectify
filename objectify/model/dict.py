@@ -288,16 +288,28 @@ class ObjectifyDict(ObjectifyModel,dict):
         self.__handle_passdown__(name)
 
 
-    def __handle_passdown__(self,name):
+    def __handle_passdown__(self,data_from):
         if self.__passdown_attributes__ is not None:
-            if name in self.__passdown_attributes__:
-                for to,to_child in self.__passdown_attributes__[name]:
-                    raw_to = self.get_raw_attribute(to)
-                    raw_child = raw_to.get_raw_attribute(to_child)
+            if data_from in self.__passdown_attributes__:
+                
+                data_to_pass = self.get_raw_attribute(data_from).to_collection()
 
-                    raw_child.from_collection(
-                        self.get_raw_attribute(name).to_collection()
-                    )
+                for to,to_child in self.__passdown_attributes__[data_from]:
+                    raw_to = self.get_raw_attribute(to)
+
+                    if isinstance(raw_to, ObjectifyModel):
+                        raw_child = raw_to.get_raw_attribute(to_child)
+
+                        raw_child.from_collection(
+                            data_to_pass
+                        )
+
+                    elif isinstance(raw_to, ObjectifyProperty):
+                        raw_to._add_passdown_value(
+                            to_child,
+                            data_to_pass
+                        )
+                        raw_to._setup_passdown()
 
 
     def _isolate_attributes(self):
