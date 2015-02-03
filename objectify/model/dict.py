@@ -4,8 +4,8 @@ import copy
 
 from .base import ObjectifyModel
 from ..base import ObjectifyObject
-from ..prop import ObjectifyProperty, Dynamic
 from ..meta import ObjectifyDictType
+from ..prop.base import ObjectifyProperty
 
 class ObjectifyDict(ObjectifyModel,dict):
 
@@ -124,6 +124,7 @@ class ObjectifyDict(ObjectifyModel,dict):
 
     def __setattr__(self,name,val,raw=False):
 
+
         if name[-2:] == "__" and name[:2] == "__":
             return super(ObjectifyDict, self).__setattr__(name,val)
         
@@ -141,6 +142,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             existing = None
 
         if not raw:
+            from ..dynamic import Dynamic
             if isinstance(existing,Dynamic):
                 return self.__set_dynamic_attr__(name,val)
 
@@ -185,7 +187,7 @@ class ObjectifyDict(ObjectifyModel,dict):
 
     def __set_dynamic_attr__(self,name,val):
         """
-            This function handles setting attributes which are instances of objectify.prop.Dynamic
+            This function handles setting attributes which are instances of objectify.dynamic.Dynamic
         """
 
         try:
@@ -193,6 +195,7 @@ class ObjectifyDict(ObjectifyModel,dict):
         except Exception as e:
             raise RuntimeError("Cannot use __set_dynamic_attr__ on a attribute which is not an instance of Dynamic")
 
+        from ..dynamic import Dynamic
         if not isinstance(existing,Dynamic):
             raise RuntimeError("Cannot use __set_dynamic_attr__ on a attribute which is not an instance of Dynamic")
 
@@ -216,7 +219,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                 In this case we need to create a DynamicDict object to properly fit our data
             """
 
-            from .dynamic import DynamicDict
+            from ..dynamic import DynamicDict
             _val = DynamicDict(name=name)
             _val.from_collection(val)
 
@@ -228,7 +231,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             """
                 In this case we need to create a DynamicList object to properly fit our data
             """
-            from .dynamic import DynamicList
+            from ..dynamic import DynamicList
             _val = DynamicList(name=name)
             _val.from_collection(val)
 
@@ -280,6 +283,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             obj = self.__dynamic_class__.copy_inited()
             obj.__key_name__ = name
             obj.from_collection(val)
+
             super(ObjectifyDict, self).__setattr__(name,obj)
         else:
             val.__key_name__ = name
@@ -303,12 +307,11 @@ class ObjectifyDict(ObjectifyModel,dict):
                         raw_child.from_collection(
                             data_to_pass
                         )
-
                     elif isinstance(raw_to, ObjectifyProperty):
-                        raw_to._add_passdown_value(
-                            to_child,
-                            data_to_pass
-                        )
+                            raw_to._add_passdown_value(
+                                to_child,
+                                data_to_pass
+                            )
 
 
     def _isolate_attributes(self):

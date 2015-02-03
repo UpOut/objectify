@@ -2,5 +2,6 @@
 
 from .dict import ObjectifyDict
 from .list import ObjectifyList
-from .dynamic import DynamicDict, DynamicList
 from .base import ObjectifyModel
+#Shh! It's a secret to avoid circular references
+#from ..prop.dynamic import DynamicDict, DynamicList

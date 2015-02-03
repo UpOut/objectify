@@ -2,76 +2,53 @@
 
 import ujson
 from objectify import ObjectifyDict, ObjectifyList
-from objectify.prop import String, Integer, Boolean, Dynamic
+from objectify.dynamic import DynamicDict
+
+from objectify.prop import String, Integer, Boolean
+from objectify.dynamic import Dynamic
 from objectify.prop.timestamp import SmartTimestamp
 
 from dateutil.parser import parse as dateutil_parse
 
 
-class TestLower(ObjectifyDict):
-    nested_string_A = String()
-    nested_string_B = String()
-    
-    nested_LIST = ObjectifyList(Integer(),default=[])
-    
-class Test(ObjectifyDict):
-
-    string_A = String()
-    string_B = String()
-    test_OBJ = TestLower()
-
-    test_LIST = ObjectifyList(TestLower())
 
 
+class TestDynamic(DynamicDict):
+    pass
 
 
-
-
-
-
-
-
-test = Test()
-test.from_collection({
-    "string_A":"Hello!",
-    "string_B":"World?",
-    "test_OBJ" : {
-        "nested_string_A" : "IN OBJ",
-        "nested_string_B" : "IN OBJ",
-        "nested_LIST" : [1,2,3,4]
+woot = TestDynamic()
+original = {
+    "hello" : "test",
+    "world" : 1,
+    "dictionary" : {
+        "yes" : "dearé"
     },
-    "test_LIST" : [{
-        "nested_string_A" : "NEAT IN LIST 0",
-        "nested_string_B" : "IN LIST 0",
-        "nested_LIST" : [5,6,7,8]
-    },
-    {
-        "nested_string_A" : "NEAT IN LIST 1",
-        "nested_string_B" : "IN LIST 1",
-        "nested_LIST" : [9,10,11]
-    }]
-})
+    "list" : [
+        "UGH",
+        {
+            "more" : "testing"
+        }
+    ]
+}
+print original
+print original['dictionary']
+print original['dictionary']['yes']
+woot.from_collection(original)
+
+#woot.dictionary.fetch()
+new = woot.to_collection()
+print new
+print type(new['dictionary']['yes'])
+print ujson.encode(new['dictionary'])
+print new['dictionary']['yes']
+print woot.serialize()
 
 
 
 
 
-
-
-
-print test.to_collection()
-print test.to_collection(
-    exclude=[
-    "string_A",
-    "test_OBJ.nested_string_A",
-    "test_LIST.[0].nested_string_B"]
-)
-
-
-
-
-
-
+print ("dearé")
 
 
 """

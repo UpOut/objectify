@@ -2,25 +2,33 @@
 
 from .base import ObjectifyProperty
 
+#### PURE STRING ####
 class String(ObjectifyProperty):
     to_type=str
 
 class Str(String):
     pass
 
-class Unicode(ObjectifyProperty):
-    to_type = unicode
-
-class TrimmedString(ObjectifyProperty):
-    to_type = str
+class TrimmedString(String):
 
     def _to_type(self,value):
         value = super(TrimmedString, self)._to_type(value)
-
         return value.strip()
 
-class TrimmedUnicode(ObjectifyProperty):
+
+
+#### UNICODE ####
+
+class Unicode(ObjectifyProperty):
     to_type = unicode
+    #Charset for unicode encoding
+    __unicode_charset__ = 'utf-8'
+
+    def _to_type(self,value):
+        return self.to_type(value,self.__unicode_charset__)
+        
+
+class TrimmedUnicode(Unicode):
 
     def _to_type(self,value):
         value = super(TrimmedUnicode, self)._to_type(value)

@@ -3,7 +3,6 @@
 from .base import ObjectifyModel
 from ..base import ObjectifyObject
 from ..meta import ObjectifyListType
-from ..prop import Dynamic
 
 class ObjectifyList(ObjectifyModel,list):
     __metaclass__ = ObjectifyListType
@@ -29,6 +28,7 @@ class ObjectifyList(ObjectifyModel,list):
             Morph an item to insert it into the list
         """
 
+        from ..dynamic import Dynamic
         if isinstance(self.__list_object__, Dynamic):
             return self.__morph_dynamic_item__(item)
 
@@ -64,7 +64,7 @@ class ObjectifyList(ObjectifyModel,list):
                 In this case we need to create a DynamicDict object to properly fit our data
             """
 
-            from .dynamic import DynamicDict
+            from ..dynamic import DynamicDict
             _item = DynamicDict()
             _item.from_collection(item)
         
@@ -74,7 +74,7 @@ class ObjectifyList(ObjectifyModel,list):
             """
                 In this case we need to create a DynamicList object to properly fit our data
             """
-            from .dynamic import DynamicList
+            from ..dynamic import DynamicList
             _item = DynamicList()
             _item.from_collection(item)
 

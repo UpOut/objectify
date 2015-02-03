@@ -180,7 +180,7 @@ class ObjectifyProperty(ObjectifyObject):
             self.fetch()
         elif not self.is_default() and self.auto_fetch:
             self.fetch()
-
+        
         if self.__value_fetched__:
             #Enable calling of .fetch() manually
             return self.__value_retrieved__.to_collection()
