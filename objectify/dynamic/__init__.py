@@ -9,9 +9,9 @@ from ..prop.string import Unicode, String
 from ..model.dict import ObjectifyDict
 from ..model.list import ObjectifyList
 
-__all__ = ['Dynamic','DynamicList','DynamicDict']
+__all__ = ['DynamicProperty','DynamicList','DynamicDict']
 
-class Dynamic(ObjectifyProperty):
+class DynamicProperty(ObjectifyProperty):
     
     #Charset for unicode encoding
     __unicode_charset__ = 'utf-8'
@@ -160,11 +160,11 @@ class Dynamic(ObjectifyProperty):
 
 #Shhh!!! It's weird, but we have to avoid circular references!
 class DynamicDict(ObjectifyDict):
-    __dynamic_class__ = Dynamic()
+    __dynamic_class__ = DynamicProperty()
     __allow_classed_dynamics__ = True
 
 class DynamicList(ObjectifyList):
-    __list_object__ = Dynamic()
+    __list_object__ = DynamicProperty()
 
 class _DynamicDictForProperty(DynamicDict):
     

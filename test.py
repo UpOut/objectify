@@ -5,7 +5,7 @@ from objectify import ObjectifyDict, ObjectifyList
 from objectify.dynamic import DynamicDict
 
 from objectify.prop import String, Integer, Boolean
-from objectify.dynamic import Dynamic
+from objectify.dynamic import DynamicProperty
 from objectify.prop.timestamp import SmartTimestamp
 
 from dateutil.parser import parse as dateutil_parse

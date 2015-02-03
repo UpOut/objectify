@@ -28,8 +28,8 @@ class ObjectifyList(ObjectifyModel,list):
             Morph an item to insert it into the list
         """
 
-        from ..dynamic import Dynamic
-        if isinstance(self.__list_object__, Dynamic):
+        from ..dynamic import DynamicProperty
+        if isinstance(self.__list_object__, DynamicProperty):
             return self.__morph_dynamic_item__(item)
 
         if isinstance(item,self.__list_object__.__class__):

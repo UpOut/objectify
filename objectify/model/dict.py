@@ -142,8 +142,8 @@ class ObjectifyDict(ObjectifyModel,dict):
             existing = None
 
         if not raw:
-            from ..dynamic import Dynamic
-            if isinstance(existing,Dynamic):
+            from ..dynamic import DynamicProperty
+            if isinstance(existing,DynamicProperty):
                 return self.__set_dynamic_attr__(name,val)
 
             if isinstance(existing,ObjectifyObject):
@@ -195,8 +195,8 @@ class ObjectifyDict(ObjectifyModel,dict):
         except Exception as e:
             raise RuntimeError("Cannot use __set_dynamic_attr__ on a attribute which is not an instance of Dynamic")
 
-        from ..dynamic import Dynamic
-        if not isinstance(existing,Dynamic):
+        from ..dynamic import DynamicProperty
+        if not isinstance(existing,DynamicProperty):
             raise RuntimeError("Cannot use __set_dynamic_attr__ on a attribute which is not an instance of Dynamic")
 
 
