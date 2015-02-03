@@ -25,7 +25,9 @@ class Unicode(ObjectifyProperty):
     __unicode_charset__ = 'utf-8'
 
     def _to_type(self,value):
-        return self.to_type(value,self.__unicode_charset__)
+        if not isinstance(value, unicode):
+            return self.to_type(value,self.__unicode_charset__)
+        return value
         
 
 class TrimmedUnicode(Unicode):
