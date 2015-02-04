@@ -4,7 +4,7 @@ import ujson
 from objectify import ObjectifyDict, ObjectifyList
 from objectify.dynamic import DynamicDict
 
-from objectify.prop import String, Integer, Boolean
+from objectify.prop import String, Integer, Boolean, Decimal
 from objectify.dynamic import DynamicProperty
 from objectify.prop.timestamp import SmartTimestamp
 
@@ -12,43 +12,17 @@ from dateutil.parser import parse as dateutil_parse
 
 
 
+class Test(ObjectifyDict):
+    d = Decimal()
 
-class TestDynamic(DynamicDict):
-    pass
-
-
-woot = TestDynamic()
-original = {
-    "hello" : "test",
-    "world" : 1,
-    "dictionary" : {
-        "yes" : "dearé"
-    },
-    "list" : [
-        "UGH",
-        {
-            "more" : "testing"
-        }
-    ]
-}
-print original
-print original['dictionary']
-print original['dictionary']['yes']
-woot.from_collection(original)
-
-#woot.dictionary.fetch()
-new = woot.to_collection()
-print new
-print type(new['dictionary']['yes'])
-print ujson.encode(new['dictionary'])
-print new['dictionary']['yes']
-print woot.serialize()
+z = Test()
+z.from_collection({
+    "d" : "1.24383719571263"
+})
+print z.d
+print type(z.d)
 
 
-
-
-
-print ("dearé")
 
 
 """
