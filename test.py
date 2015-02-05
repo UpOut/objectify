@@ -17,7 +17,7 @@ class Test(ObjectifyDict):
 
 z = Test()
 z.from_collection({
-    "d" : "1.24383719571263"
+    "d" : "1.243837195712635757"
 })
 print z.d
 print type(z.d)

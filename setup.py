@@ -8,7 +8,7 @@ from objectify import __version__
 setup(
 	name = 'objectify',
 	version = __version__,
-	description = 'Object library',
+	description = 'Object library.',
 	author = 'William King',
 	author_email = 'will@upout.com',
 	zip_safe = False,
