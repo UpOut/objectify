@@ -11,15 +11,20 @@ from objectify.prop.timestamp import SmartTimestamp
 from dateutil.parser import parse as dateutil_parse
 
 
+class DecimalLatitude(Decimal):
+    __decimal_context_kwargs__ = {
+        "prec" : 7
+    }
+
 
 class Test(ObjectifyDict):
-    d = Decimal()
+    d = DecimalLatitude()
 
 z = Test()
 z.from_collection({
-    "d" : "1.243837195712635757"
+    "d" : "99.123456789"
 })
-print z.d
+print z.d.normalize()
 print type(z.d)
 
 
