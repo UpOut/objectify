@@ -143,7 +143,9 @@ class ObjectifyProperty(ObjectifyObject):
         _fetch_value = self.__value__
         if isinstance(_fetch_value,ObjectifyObject):
             _fetch_value = _fetch_value.to_collection()
-            
+        
+        print "~~~~~~",_fetch_value
+
         _do_fetch = True
         if self.__value_fetched__:
             if self.__value_fetched_value__ == _fetch_value:
