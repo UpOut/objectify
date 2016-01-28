@@ -141,10 +141,11 @@ class ObjectifyProperty(ObjectifyObject):
             raise RuntimeError("Cannot fetch value without fetch_object")
 
         _fetch_value = self.__value__
+        print "~~~~~~NO OBJ~~~~",_fetch_value
         if isinstance(_fetch_value,ObjectifyObject):
             _fetch_value = _fetch_value.to_collection()
         
-        print "~~~~~~",_fetch_value
+        print "~~~~~~CHECKED OBJ~~~~",_fetch_value
 
         _do_fetch = True
         if self.__value_fetched__:
