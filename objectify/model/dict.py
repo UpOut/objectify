@@ -150,7 +150,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                 if isinstance(val,ObjectifyObject):
                     val = val.to_collection()
                 
-                _val = existing#.copy_inited()
+                _val = existing.copy_inited()
                 _val.from_collection(val)
 
                 val = _val
