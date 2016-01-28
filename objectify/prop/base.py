@@ -152,7 +152,7 @@ class ObjectifyProperty(ObjectifyObject):
             if self.__value_fetched_value__ == _fetch_value:
                 _do_fetch = False
 
-
+        print "!!!!!",self.__value__
         if _do_fetch:
             print "~~~~AM FETCHING AGAIN~~~"
             self.__value_fetched_value__ = _fetch_value
@@ -166,6 +166,8 @@ class ObjectifyProperty(ObjectifyObject):
                 fetch_from = self.__fetch_wrapper_func__(fetch_from)
 
             self.__value_retrieved__.fetch_from(fetch_from,**fetch_from_kwargs)
+        
+        print "!!!!!",self.__value__
 
         return self.__value_retrieved__
 
