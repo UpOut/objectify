@@ -175,6 +175,7 @@ class ObjectifyProperty(ObjectifyObject):
         import inspect
         curframe = inspect.currentframe()
         calframe = inspect.getouterframes(curframe, 2)
+        print calframe
         print "@@@@@@@@ LOADING @@@@@@", frm, calframe[1]
 
         if (frm == self.incoming_default or
