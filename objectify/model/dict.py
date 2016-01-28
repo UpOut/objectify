@@ -240,7 +240,7 @@ class ObjectifyDict(ObjectifyModel,dict):
             return
         
 
-        _val = existing#.copy_inited()
+        _val = existing.copy_inited()
         _val.from_collection(val)
         
 
@@ -485,7 +485,7 @@ class ObjectifyDict(ObjectifyModel,dict):
                     continue
 
                 obj = self.__getattribute__(attr,raw=True)
-                obj = obj#.copy_inited()
+                obj = obj.copy_inited()
                 self.__setattr__(attr,obj,raw=True)
         
         completed = set()
