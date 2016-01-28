@@ -139,6 +139,10 @@ class ObjectifyProperty(ObjectifyObject):
 
         if not isinstance(self.__fetch_object__,ObjectifyObject):
             raise RuntimeError("Cannot fetch value without fetch_object")
+
+        _fetch_value = self.__value__
+        if isinstance(_fetch_value,ObjectifyObject):
+            _fetch_value = _fetch_value.to_collection()
             
         _do_fetch = True
         if self.__value_fetched__:
@@ -147,10 +151,7 @@ class ObjectifyProperty(ObjectifyObject):
 
 
         if _do_fetch:
-            _fetch_value = self.__value__
-            if isinstance(_fetch_value,ObjectifyObject):
-                _fetch_value = _fetch_value.to_collection()
-
+            print "~~~~AM FETCHING AGAIN~~~"
             self.__value_fetched_value__ = _fetch_value
             self.__value_fetched__ = True
             self.__value_retrieved__ = self.__fetch_object__.copy_inited()
