@@ -133,7 +133,6 @@ class ObjectifyProperty(ObjectifyObject):
         return False
 
     def fetch(self,fetch_from_kwargs={}):
-        print "~~~~STARTING FETCHING AGAIN~~~"
         if self.is_default() and not self.can_fetch_default:
             return self.__value_retrieved__
 
@@ -141,20 +140,16 @@ class ObjectifyProperty(ObjectifyObject):
             raise RuntimeError("Cannot fetch value without fetch_object")
 
         _fetch_value = self.__value__
-        print "~~~~~~NO OBJ~~~~",_fetch_value
         if isinstance(_fetch_value,ObjectifyObject):
             _fetch_value = _fetch_value.to_collection()
         
-        print "~~~~~~CHECKED OBJ~~~~",_fetch_value
 
         _do_fetch = True
         if self.__value_fetched__:
             if self.__value_fetched_value__ == _fetch_value:
                 _do_fetch = False
 
-        print "!!!!!",self.__value__
         if _do_fetch:
-            print "~~~~AM FETCHING AGAIN~~~"
             self.__value_fetched_value__ = _fetch_value
             self.__value_fetched__ = True
             self.__value_retrieved__ = self.__fetch_object__.copy_inited()
@@ -166,13 +161,10 @@ class ObjectifyProperty(ObjectifyObject):
                 fetch_from = self.__fetch_wrapper_func__(fetch_from)
 
             self.__value_retrieved__.fetch_from(fetch_from,**fetch_from_kwargs)
-        
-        print "!!!!!",self.__value__
 
         return self.__value_retrieved__
 
     def from_collection(self,frm):
-        print "@@@@@@@@ LOADING @@@@@@", frm
 
         if (frm == self.incoming_default or
                 frm == self.outgoing_default):
