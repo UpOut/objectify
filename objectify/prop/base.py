@@ -172,8 +172,11 @@ class ObjectifyProperty(ObjectifyObject):
         return self.__value_retrieved__
 
     def from_collection(self,frm):
-        print "@@@@@@@@ LOADING @@@@@@", frm
-        
+        import inspect
+        curframe = inspect.currentframe()
+        calframe = inspect.getouterframes(curframe, 2)
+        print "@@@@@@@@ LOADING @@@@@@", frm, calframe[1]
+
         if (frm == self.incoming_default or
                 frm == self.outgoing_default):
             self.__value__ = self.outgoing_default
