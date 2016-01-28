@@ -133,7 +133,7 @@ class ObjectifyProperty(ObjectifyObject):
         return False
 
     def fetch(self,fetch_from_kwargs={}):
-
+        print "~~~~STARTING FETCHING AGAIN~~~"
         if self.is_default() and not self.can_fetch_default:
             return self.__value_retrieved__
 
