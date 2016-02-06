@@ -32,12 +32,13 @@ class ObjectifyList(ObjectifyModel,list):
         if isinstance(self.__list_object__, DynamicProperty):
             return self.__morph_dynamic_item__(item)
 
-        if isinstance(item,self.__list_object__.__class__):
-            item = item.to_collection()
+        if not isinstance(item,self.__list_object__.__class__):
 
-        _item = self.__list_object__.copy_inited()
-        
-        _item.from_collection(item)
+            _item = self.__list_object__.copy_inited()
+            
+            _item.from_collection(item)
+        else:
+            _item = item
 
         return _item
 
