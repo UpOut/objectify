@@ -21,7 +21,7 @@ class ObjectifyProperty(ObjectifyObject):
     #Whether or not the value was specifically set externally, default or not
     __value_touched__ = False
     #If we've fetched the value
-    #__value_fetched__ = False
+    __value_fetched__ = False
     #The value we retrieved on fetch
     __value_retrieved__ = None
     #The value used to fetch
@@ -70,6 +70,8 @@ class ObjectifyProperty(ObjectifyObject):
         if self.auto_fetch and not isinstance(self.__fetch_object__,ObjectifyObject):
             raise RuntimeError("Cannot auto_fetch property without fetch_object that is an ObjectifyObject")
 
+        self.__fetch_object__ = self.__fetch_object__.copy_inited()
+        
         self.auto_fetch_default = auto_fetch_default
         if self.auto_fetch_default:
             #If we are auto fetching default we have to be able to!
