@@ -21,7 +21,7 @@ class ObjectifyProperty(ObjectifyObject):
     #Whether or not the value was specifically set externally, default or not
     __value_touched__ = False
     #If we've fetched the value
-    __value_fetched__ = False
+    #__value_fetched__ = False
     #The value we retrieved on fetch
     __value_retrieved__ = None
     #The value used to fetch
