@@ -12,7 +12,12 @@ from ..model.list import ObjectifyList
 __all__ = ['DynamicProperty','DynamicList','DynamicDict']
 
 class DynamicProperty(ObjectifyProperty):
-    
+    """ Takes in any value and tries to type fit it
+        into the proper type / object
+
+        May or may not try to convert strings into numbers
+    """
+
     #Charset for unicode encoding
     __unicode_charset__ = 'utf-8'
 
@@ -160,10 +165,22 @@ class DynamicProperty(ObjectifyProperty):
 
 #Shhh!!! It's weird, but we have to avoid circular references!
 class DynamicDict(ObjectifyDict):
+    """ Takes in any dictionary and tries to type fit it
+        into the proper type / object
+
+        May or may not try to convert strings into numbers
+    """
+
     __dynamic_class__ = DynamicProperty()
     __allow_classed_dynamics__ = True
 
 class DynamicList(ObjectifyList):
+    """ Takes in any list and tries to type fit it
+        into the proper type / object
+
+        May or may not try to convert strings into numbers
+    """
+
     __list_object__ = DynamicProperty()
 
 class _DynamicDictForProperty(DynamicDict):

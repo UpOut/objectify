@@ -7,6 +7,14 @@ from datetime import datetime, date
 from .base import ObjectifyProperty
 
 class SmartTimestamp(ObjectifyProperty):
+    """ A timestamp
+
+        Attempts to normalize any valid incoming
+        timestamp into one format, and may convert timezone
+
+        Uses python dateutil for incoming validation
+    """
+
     __to_timezone__ = None
     #If true, will convert to the to_timezone
     __timezone_convert__ = False

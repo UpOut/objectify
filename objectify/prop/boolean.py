@@ -6,6 +6,13 @@ TRUE_VALUES = set(['true','1','yes'])
 FALSE_VALUES = set(['false','0','no'])
 
 class Boolean(ObjectifyProperty):
+    """ A boolean value, accepting the following:
+
+        TRUE: True, 1, 'true', '1', 'yes' (case insentitive)
+        
+        FALSE: False, 0, 'false', '0', 'no' (case insentitive)
+    """
+
     to_type=bool
 
     def _to_type(self,value):

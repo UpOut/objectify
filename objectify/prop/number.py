@@ -7,18 +7,29 @@ from .base import ObjectifyProperty
 
 
 class Integer(ObjectifyProperty):
+    """ A system dependent (32 or 64 bit) integer """
+
     to_type=int
 
 class Int(Integer):
     pass
 
 class Float(ObjectifyProperty):
+    """ A float """
+
     to_type = float
 
 class Long(ObjectifyProperty):
+    """ A 64 bit integer """
+
     to_type = long
 
 class Decimal(ObjectifyProperty):
+    """ A Python decimal, attempts exact precision
+    
+        Rounding, precision, etc. may vary depending on use 
+    """
+
     to_type = python_Decimal
 
     __decimal_context_kwargs__ = {}

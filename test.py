@@ -9,7 +9,7 @@ from objectify.dynamic import DynamicProperty
 from objectify.prop.timestamp import SmartTimestamp
 
 from dateutil.parser import parse as dateutil_parse
-
+print DynamicProperty.__doc__
 
 class DecimalLatitude(Decimal):
     __decimal_context_kwargs__ = {
