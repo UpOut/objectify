@@ -555,12 +555,19 @@ class ObjectifyDict(ObjectifyModel,dict):
 
                 if isinstance(obj,ObjectifyProperty):
                     if obj.auto_fetch:
-                        to_return[obj.__key_name__] = obj.example_fetched_value()
+                        try:
+                            to_return[obj.__key_name__] = obj.example_fetched_value()
+                        except NotImplementedError:
+                            to_return[obj.__key_name__] = obj.example_value()
+                            
                     else:
                         if not obj._auto_fetch_set:
                             #Auto fetch not specifically set
                             if attr in self.__fetch_attrs__:
-                                to_return[obj.__key_name__] = obj.example_fetched_value()
+                                try:
+                                    to_return[obj.__key_name__] = obj.example_fetched_value()
+                                except NotImplementedError:
+                                    to_return[obj.__key_name__] = obj.example_value()
                             else:
                                 to_return[obj.__key_name__] = obj.example_value()
                         else:
