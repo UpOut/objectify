@@ -65,3 +65,6 @@ class ObjectifyModel(ObjectifyObject):
             *self.__init_args__,
             **self.__init_kwargs__
         )
+
+    def example_value(self):
+        raise NotImplementedError()

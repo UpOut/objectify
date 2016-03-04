@@ -4,7 +4,7 @@ import ujson
 from objectify import ObjectifyDict, ObjectifyList
 from objectify.dynamic import DynamicDict
 
-from objectify.prop import String, Integer, Boolean, Decimal
+from objectify.prop import String, Integer, Boolean, Decimal, TrimmedUnicode
 from objectify.dynamic import DynamicProperty
 from objectify.prop.timestamp import SmartTimestamp
 
@@ -20,12 +20,24 @@ class DecimalLatitude(Decimal):
 class Test(ObjectifyDict):
     d = DecimalLatitude()
 
+    x = Boolean()
+
+    y = SmartTimestamp()
+
+    w = DynamicDict()
+
+    t = TrimmedUnicode()
+
 z = Test()
 z.from_collection({
     "d" : "99.123456789"
 })
 print z.d.normalize()
 print type(z.d)
+
+print Integer().example_value()
+
+print ujson.encode(Test().example_value())
 
 
 

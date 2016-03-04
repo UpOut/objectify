@@ -161,6 +161,9 @@ class DynamicProperty(ObjectifyProperty):
 
         raise RuntimeError("Unable to determine type of value %s" % frm)
 
+    def example_value(self):
+        return "Anything, will be type fitted!"
+
 
 
 #Shhh!!! It's weird, but we have to avoid circular references!
@@ -174,6 +177,14 @@ class DynamicDict(ObjectifyDict):
     __dynamic_class__ = DynamicProperty()
     __allow_classed_dynamics__ = True
 
+    def example_value(self):
+        return {
+            "anything" : 1,
+            "dictionary" : True,
+            "you" : None,
+            "want" : "!"
+        }
+
 class DynamicList(ObjectifyList):
     """ Takes in any list and tries to type fit it
         into the proper type / object
@@ -182,6 +193,11 @@ class DynamicList(ObjectifyList):
     """
 
     __list_object__ = DynamicProperty()
+
+    def example_value(self):
+        return [{
+            "anything" : 1
+        },"at",[{"all":True}]]
 
 class _DynamicDictForProperty(DynamicDict):
     

@@ -529,3 +529,50 @@ class ObjectifyDict(ObjectifyModel,dict):
         )
         
         return cl
+
+    def example_value(self,exclude=None):
+        to_return = {}
+
+        #For notes on the exclude path, see EXCLUDE.rst
+
+
+        if exclude:
+            exclude = set(exclude)
+
+        this_level_exclude = None
+        passdown_exclude = {}
+
+        if exclude:
+            this_level_exclude,passdown_exclude = self.split_exclude(exclude)
+
+        for _,attr in self.__obj_attrs__.iteritems():
+            if this_level_exclude is not None and attr in this_level_exclude:
+                continue
+
+            obj = self.__getattribute__(attr,raw=True)
+
+            if isinstance(obj,ObjectifyObject):
+
+                if isinstance(obj,ObjectifyProperty):
+                    if obj.auto_fetch:
+                        to_return[obj.__key_name__] = obj.example_fetched_value()
+                    else:
+                        if not obj._auto_fetch_set:
+                            #Auto fetch not specifically set
+                            if attr in self.__fetch_attrs__:
+                                to_return[obj.__key_name__] = obj.example_fetched_value()
+                            else:
+                                to_return[obj.__key_name__] = obj.example_value()
+                        else:
+                            to_return[obj.__key_name__] = obj.example_value()
+
+                else:
+                    if attr in passdown_exclude:
+                        to_return[obj.__key_name__] = obj.example_value(
+                            exclude=passdown_exclude[attr]
+                        )
+                    else:
+                        to_return[obj.__key_name__] = obj.example_value()
+
+
+        return to_return

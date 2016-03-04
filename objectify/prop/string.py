@@ -8,6 +8,11 @@ class String(ObjectifyProperty):
     
     to_type=str
 
+    
+    def example_value(self):
+        return "Serious sample string"
+
+
 class Str(String):
     pass
 
@@ -33,6 +38,10 @@ class Unicode(ObjectifyProperty):
         if not isinstance(value, unicode):
             return self.to_type(value,self.__unicode_charset__)
         return value
+
+    
+    def example_value(self):
+        return "Serious utf8 string"
         
 
 class TrimmedUnicode(Unicode):

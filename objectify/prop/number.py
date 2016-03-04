@@ -11,6 +11,10 @@ class Integer(ObjectifyProperty):
 
     to_type=int
 
+    
+    def example_value(self):
+        return 1234
+
 class Int(Integer):
     pass
 
@@ -19,10 +23,18 @@ class Float(ObjectifyProperty):
 
     to_type = float
 
+    
+    def example_value(self):
+        return 12.34
+
 class Long(ObjectifyProperty):
     """ A 64 bit integer """
 
     to_type = long
+
+    
+    def example_value(self):
+        return 12345678910111213141516L
 
 class Decimal(ObjectifyProperty):
     """ A Python decimal, attempts exact precision
@@ -78,5 +90,9 @@ class Decimal(ObjectifyProperty):
             setcontext(ctx)
 
         return value
+
+    
+    def example_value(self):
+        return python_Decimal("12.34")
 
 

@@ -38,3 +38,8 @@ class ObjectifyObject(object):
             *self.__init_args__,
             **self.__init_kwargs__
         )
+
+    #Lets us specify an example for this object
+    #Designed for docs
+    def example_value(self):
+        raise NotImplementedError()

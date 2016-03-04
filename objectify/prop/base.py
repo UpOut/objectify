@@ -203,3 +203,11 @@ class ObjectifyProperty(ObjectifyObject):
             *self.__init_args__,
             **self.__init_kwargs__
         )
+
+    
+    def example_value(self):
+        raise NotImplementedError()
+
+    def example_fetched_value(self):
+        raise NotImplementedError()
+

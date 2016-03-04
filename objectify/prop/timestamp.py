@@ -73,3 +73,7 @@ class SmartTimestamp(ObjectifyProperty):
             return value.strftime(self.__outgoing_format__)
 
         return value
+
+    
+    def example_value(self):
+        return "2016-03-02T18:36:14+00:00"

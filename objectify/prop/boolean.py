@@ -36,6 +36,10 @@ class Boolean(ObjectifyProperty):
             value = bool(value)
 
         return value
+
+    
+    def example_value(self):
+        return True
     
 class Bool(Boolean):
     pass

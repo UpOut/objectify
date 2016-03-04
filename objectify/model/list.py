@@ -192,3 +192,6 @@ class ObjectifyList(ObjectifyModel,list):
         cl.__list_object__ = cl.__list_object__.copy_inited()
         
         return cl
+
+    def example_value(self):
+        return [self.__list_object__.example_value()]
