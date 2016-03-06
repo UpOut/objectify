@@ -49,6 +49,9 @@ class ObjectifyModel(ObjectifyObject):
     def fetch_key_value(self):
         return getattr(self,self.__fetch_attr__)
 
+    def set_fetch_key_value(self,val):
+        return setattr(self,self.__fetch_attr__,val)
+
     def serialize(self):
         return self.__serializer__(self.to_collection())
 

@@ -18,6 +18,8 @@ class DecimalLatitude(Decimal):
 
 
 class Test(ObjectifyDict):
+
+    id = Integer(fetch_key=True)
     d = DecimalLatitude()
 
     x = Boolean()
@@ -32,6 +34,12 @@ z = Test()
 z.from_collection({
     "d" : "99.123456789"
 })
+
+print z.fetch_key_value()
+z.set_fetch_key_value('12345')
+print z.fetch_key_value()
+print "---"
+
 print z.d.normalize()
 print type(z.d)
 
